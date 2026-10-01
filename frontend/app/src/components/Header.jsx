@@ -1,3 +1,5 @@
+import UserMenu from "./UserMenu";
+
 function Header({ cartCount, wishlistCount, onOpenPanel }) {
   return (
     <>
@@ -41,12 +43,7 @@ function Header({ cartCount, wishlistCount, onOpenPanel }) {
             Bag <span className="tiny-count">{cartCount}</span>
           </button>
 
-          <button
-            className="sign-in"
-            onClick={() => onOpenPanel("account")}
-          >
-            Sign in
-          </button>
+          <UserMenu />
         </div>
       </header>
     </>

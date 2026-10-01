@@ -1,0 +1,16 @@
+.user-greeting {
+  color: #52534b;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.user-greeting b {
+  color: #354c3c;
+  font-weight: 600;
+}
+
+@media (max-width: 620px) {
+  .user-greeting {
+    display: none;
+  }
+}

@@ -1,6 +1,13 @@
 import UserMenu from "./UserMenu";
 
-function Header({ cartCount, wishlistCount, onOpenPanel }) {
+function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
+  function go(target) {
+    return (event) => {
+      event.preventDefault();
+      onNavigate(target);
+    };
+  }
+
   return (
     <>
       <div className="announcement">
@@ -10,8 +17,12 @@ function Header({ cartCount, wishlistCount, onOpenPanel }) {
       <header className="topbar">
         <a
           className="brand"
-          href="#top"
-          onClick={() => onOpenPanel("")}
+          href="/"
+          onClick={(event) => {
+            event.preventDefault();
+            onOpenPanel("");
+            onNavigate("top");
+          }}
           aria-label="Bookverse home"
         >
           <span className="brand-mark">b.</span>
@@ -21,9 +32,9 @@ function Header({ cartCount, wishlistCount, onOpenPanel }) {
         </a>
 
         <nav className="main-nav" aria-label="Main navigation">
-          <a href="#catalog">Discover</a>
-          <a href="#catalog">Bestsellers</a>
-          <a href="#about">Our story</a>
+          <a href="#catalog" onClick={go("discover")}>Discover</a>
+          <a href="#catalog" onClick={go("bestsellers")}>Bestsellers</a>
+          <a href="#about" onClick={go("about")}>Our story</a>
         </nav>
 
         <div className="header-actions">
@@ -41,6 +52,14 @@ function Header({ cartCount, wishlistCount, onOpenPanel }) {
             aria-label={`Open shopping bag, ${cartCount} books`}
           >
             Bag <span className="tiny-count">{cartCount}</span>
+          </button>
+
+          <button
+            className="icon-button"
+            onClick={() => onOpenPanel("orders")}
+            aria-label="Open your orders"
+          >
+            Orders
           </button>
 
           <UserMenu />

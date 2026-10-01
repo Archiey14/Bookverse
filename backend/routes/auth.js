@@ -2,9 +2,10 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { read, write } from "../db.js";
+import { JWT_SECRET } from "../config.js";
 
 const router = Router();
-const SECRET = "bookverse-dev-secret";
+const SECRET = JWT_SECRET;
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;

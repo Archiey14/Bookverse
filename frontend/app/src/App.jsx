@@ -1,114 +1,74 @@
-import { useMemo, useState } from "react";
-import { books } from "./data/books";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import BookCatalog from "./components/BookCatalog";
 import SidePanel from "./components/SidePanel";
 import BookDetails from "./components/BookDetails";
 import Footer from "./components/Footer";
+import About from "./components/About";
+import { useBooks } from "./hooks/useBooks";
+import { useShop } from "./hooks/useShop";
+import { useScrollLock } from "./hooks/useScrollLock";
 import "./App.css";
 
-function readSaved(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 function App() {
-  const [cart, setCart] = useState(() => readSaved("bookverse-cart", {}));
-  const [wishlist, setWishlist] = useState(() =>
-    readSaved("bookverse-wishlist", []),
-  );
-  const [orders, setOrders] = useState(() =>
-    readSaved("bookverse-orders", []),
-  );
-  const [panel, setPanel] = useState("");
+  const { books, loading, loadError } = useBooks();
+  const {
+    cart,
+    wishlist,
+    orders,
+    panel,
+    setPanel,
+    toast,
+    notify,
+    cartCount,
+    cartTotal,
+    wishlistBooks,
+    addToCart,
+    changeQuantity,
+    toggleWishlist,
+    checkout,
+  } = useShop(books);
+
+  // Other pages (like /book/:id) send people here with a target to scroll to
+  const location = useLocation();
+  const initialTarget = location.state?.goTo;
+
   const [selectedBook, setSelectedBook] = useState(null);
-  const [toast, setToast] = useState("");
+  const [collection, setCollection] = useState(
+    initialTarget === "bestsellers" ? "bestsellers" : "all",
+  );
+  const [catalogKey, setCatalogKey] = useState(0);
 
-  const cartCount = Object.values(cart).reduce(
-    (total, quantity) => total + quantity,
-    0,
+  useScrollLock(Boolean(panel || selectedBook));
+
+  useEffect(() => {
+    if (loading || !initialTarget) return;
+    const id = initialTarget === "about" ? "about" : "catalog";
+    document.getElementById(id)?.scrollIntoView();
+  }, [loading, initialTarget]);
+
+  const categories = useMemo(
+    () => ["All Books", ...new Set(books.map((book) => book.category))],
+    [books],
   );
 
-  const cartTotal = Object.entries(cart).reduce((total, [id, quantity]) => {
-    const book = books.find((item) => item.id === Number(id));
-    return total + (book ? book.price * quantity : 0);
-  }, 0);
-
-  const wishlistBooks = useMemo(
-    () => books.filter((book) => wishlist.includes(book.id)),
-    [wishlist],
-  );
-
-  function notify(message) {
-    setToast(message);
-    window.setTimeout(() => setToast(""), 2200);
-  }
-
-  function addToCart(book) {
-    const nextCart = {
-      ...cart,
-      [book.id]: (cart[book.id] || 0) + 1,
-    };
-
-    setCart(nextCart);
-    localStorage.setItem("bookverse-cart", JSON.stringify(nextCart));
-    notify(`${book.title} added to your bag`);
-  }
-
-  function changeQuantity(id, amount) {
-    const nextCart = { ...cart };
-    nextCart[id] = (nextCart[id] || 0) + amount;
-
-    if (nextCart[id] <= 0) {
-      delete nextCart[id];
+  function goTo(target) {
+    if (target === "top") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
 
-    setCart(nextCart);
-    localStorage.setItem("bookverse-cart", JSON.stringify(nextCart));
-  }
+    if (target === "about") {
+      document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
 
-  function toggleWishlist(book) {
-    const nextWishlist = wishlist.includes(book.id)
-      ? wishlist.filter((id) => id !== book.id)
-      : [...wishlist, book.id];
-
-    setWishlist(nextWishlist);
-    localStorage.setItem(
-      "bookverse-wishlist",
-      JSON.stringify(nextWishlist),
-    );
-    notify(
-      nextWishlist.includes(book.id)
-        ? "Saved to your wishlist"
-        : "Removed from wishlist",
-    );
-  }
-
-  function checkout() {
-    if (cartCount === 0) return;
-
-    const nextOrders = [
-      {
-        id: Date.now(),
-        date: new Date().toLocaleDateString(),
-        total: cartTotal,
-        status: "Order placed",
-      },
-      ...orders,
-    ];
-
-    setOrders(nextOrders);
-    localStorage.setItem("bookverse-orders", JSON.stringify(nextOrders));
-
-    setCart({});
-    localStorage.setItem("bookverse-cart", JSON.stringify({}));
-
-    setPanel("");
-    notify("Demo order placed successfully!");
+    // Discover / Bestsellers: reset the catalog's filters and jump to it
+    setCollection(target === "bestsellers" ? "bestsellers" : "all");
+    setCatalogKey((key) => key + 1);
+    document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -117,18 +77,30 @@ function App() {
         cartCount={cartCount}
         wishlistCount={wishlist.length}
         onOpenPanel={setPanel}
+        onNavigate={goTo}
       />
 
       <main>
         <Hero />
 
-        <BookCatalog
-          books={books}
-          wishlist={wishlist}
-          onToggleWishlist={toggleWishlist}
-          onAddToCart={addToCart}
-          onSelectBook={setSelectedBook}
-        />
+        {loading && <p className="empty-results">Loading books…</p>}
+        {loadError && <p className="empty-results">{loadError}</p>}
+
+        {!loading && !loadError && (
+          <BookCatalog
+            key={`${collection}-${catalogKey}`}
+            collection={collection}
+            onCollectionChange={setCollection}
+            books={books}
+            categories={categories}
+            wishlist={wishlist}
+            onToggleWishlist={toggleWishlist}
+            onAddToCart={addToCart}
+            onSelectBook={setSelectedBook}
+          />
+        )}
+
+        <About />
 
         <Footer onNotify={notify} />
       </main>
@@ -136,7 +108,8 @@ function App() {
       <SidePanel
         panel={panel}
         onClose={() => setPanel("")}
-        cart={{ ...cart, books }}
+        cart={cart}
+        books={books}
         cartCount={cartCount}
         cartTotal={cartTotal}
         wishlistBooks={wishlistBooks}
@@ -144,13 +117,11 @@ function App() {
         onChangeQuantity={changeQuantity}
         onAddToCart={addToCart}
         onCheckout={checkout}
-        onNotify={notify}
-        onOpenPanel={setPanel}
-        catalogCount={books.length}
       />
 
       <BookDetails
         book={selectedBook}
+        isWishlisted={selectedBook ? wishlist.includes(selectedBook.id) : false}
         onClose={() => setSelectedBook(null)}
         onAddToCart={addToCart}
         onToggleWishlist={toggleWishlist}

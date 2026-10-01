@@ -1,7 +1,24 @@
+function MiniCover({ book }) {
+  return (
+    <div className={`mini-cover cover-${book.id % 5}`}>
+      ▤
+      <img
+        src={`https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg`}
+        alt={`Cover of ${book.title}`}
+        loading="lazy"
+        onError={(event) => {
+          event.currentTarget.style.display = "none";
+        }}
+      />
+    </div>
+  );
+}
+
 function SidePanel({
   panel,
   onClose,
   cart,
+  books,
   cartCount,
   cartTotal,
   wishlistBooks,
@@ -9,18 +26,13 @@ function SidePanel({
   onChangeQuantity,
   onAddToCart,
   onCheckout,
-  onNotify,
-  onOpenPanel,
-  catalogCount,
 }) {
   if (!panel) return null;
 
   const title = {
     cart: "Your bag",
     wishlist: "Your wishlist",
-    account: "Welcome, reader",
     orders: "Your orders",
-    admin: "Bookverse dashboard",
   }[panel];
 
   return (
@@ -48,14 +60,12 @@ function SidePanel({
             ) : (
               <div className="panel-items">
                 {Object.entries(cart).map(([id, quantity]) => {
-                  const book = cart.books.find(
-                    (item) => item.id === Number(id),
-                  );
+                  const book = books.find((item) => item.id === Number(id));
                   if (!book) return null;
 
                   return (
                     <div className="panel-item" key={id}>
-                      <div className={`mini-cover cover-${book.id % 5}`}>▤</div>
+                      <MiniCover book={book} />
                       <div className="panel-item-info">
                         <b>{book.title}</b>
                         <small>{book.author}</small>
@@ -101,7 +111,7 @@ function SidePanel({
             ) : (
               wishlistBooks.map((book) => (
                 <div className="panel-item" key={book.id}>
-                  <div className={`mini-cover cover-${book.id % 5}`}>▤</div>
+                  <MiniCover book={book} />
                   <div className="panel-item-info">
                     <b>{book.title}</b>
                     <small>{book.author}</small>
@@ -116,63 +126,6 @@ function SidePanel({
               ))
             )}
           </div>
-        )}
-
-        {panel === "account" && (
-          <form
-            className="account-form"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onClose();
-              onNotify("Signed in for this demo!");
-            }}
-          >
-            <p>Sign in to keep your reading list and orders together.</p>
-
-            <label>
-              Email address
-              <input type="email" placeholder="you@example.com" required />
-            </label>
-
-            <label>
-              Password
-              <input
-                type="password"
-                placeholder="At least 6 characters"
-                minLength="6"
-                required
-              />
-            </label>
-
-            <button className="primary-button">Sign in →</button>
-            <small>Demo only. This form does not create an account.</small>
-
-            <button
-              type="button"
-              className="text-action"
-              onClick={() =>
-                onNotify("Connect an account service to enable registration.")
-              }
-            >
-              Create an account
-            </button>
-
-            <button
-              type="button"
-              className="text-action"
-              onClick={() => onOpenPanel("orders")}
-            >
-              View order history
-            </button>
-
-            <button
-              type="button"
-              className="text-action"
-              onClick={() => onOpenPanel("admin")}
-            >
-              Open admin preview
-            </button>
-          </form>
         )}
 
         {panel === "orders" && (
@@ -192,24 +145,6 @@ function SidePanel({
                 </div>
               ))
             )}
-          </div>
-        )}
-
-        {panel === "admin" && (
-          <div className="admin-preview">
-            <p>Sample inventory overview</p>
-            <div>
-              <b>{catalogCount}</b>
-              <span>Books in catalog</span>
-            </div>
-            <div>
-              <b>{orders.length}</b>
-              <span>Demo orders</span>
-            </div>
-            <small>
-              This is a display preview. Managing real books and inventory
-              requires a backend.
-            </small>
           </div>
         )}
       </aside>

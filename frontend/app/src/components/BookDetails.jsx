@@ -1,5 +1,23 @@
-function BookDetails({ book, onClose, onAddToCart, onToggleWishlist }) {
+import { Link } from "react-router-dom";
+import { getStockStatus } from "../utils/stock";
+
+function BookDetails({
+  book,
+  isWishlisted,
+  onClose,
+  onAddToCart,
+  onToggleWishlist,
+}) {
   if (!book) return null;
+
+  const { outOfStock, message } = getStockStatus(book);
+
+  const info = [
+    book.publisher,
+    book.publishedYear,
+    book.pages && `${book.pages} pages`,
+    book.format,
+  ].filter(Boolean);
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -41,14 +59,20 @@ function BookDetails({ book, onClose, onAddToCart, onToggleWishlist }) {
 
           <p>{book.description}</p>
 
+          {info.length > 0 && (
+            <small className="demo-note">{info.join(" · ")}</small>
+          )}
+
           <div className="detail-stock">
-            <span aria-hidden="true">✓</span> In stock · ships in 1–2 days
+            {!outOfStock && <span aria-hidden="true">✓ </span>}
+            {message}
           </div>
 
           <div className="detail-actions">
             <b>${book.price.toFixed(2)}</b>
             <button
               className="primary-button"
+              disabled={outOfStock}
               onClick={() => {
                 onAddToCart(book);
                 onClose();
@@ -58,11 +82,33 @@ function BookDetails({ book, onClose, onAddToCart, onToggleWishlist }) {
             </button>
             <button
               className="icon-button"
-              aria-label="Add to wishlist"
+              aria-label={
+                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              }
               onClick={() => onToggleWishlist(book)}
             >
-              ♡
+              {isWishlisted ? "♥" : "♡"}
             </button>
+          </div>
+
+          <div className="detail-links">
+            {book.previewUrl && (
+              <a
+                className="secondary-button"
+                href={book.previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Preview <span aria-hidden="true">↗</span>
+              </a>
+            )}
+            <Link
+              className="text-link"
+              to={`/book/${book.id}`}
+              onClick={onClose}
+            >
+              View full page →
+            </Link>
           </div>
 
           <small className="demo-note">

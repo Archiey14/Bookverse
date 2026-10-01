@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
+import BookPage from './pages/BookPage.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/book/:id" element={<BookPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

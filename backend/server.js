@@ -1,14 +1,16 @@
 import express from "express";
 import cors from "cors";
 import booksRouter from "./routes/books.js";
+import reviewsRouter from "./routes/reviews.js";
 import authRouter from "./routes/auth.js";
+import { PORT } from "./config.js";
 
 const app = express();
-const PORT = 5001;
 
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/books/:id/reviews", reviewsRouter);
 app.use("/api/books", booksRouter);
 app.use("/api/auth", authRouter);
 

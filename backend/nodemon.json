@@ -1,5 +1,12 @@
 {
-  "watch": ["server.js", "db.js", "routes"],
+  "watch": [
+    "server.js",
+    "db.js",
+    "config.js",
+    "stats.js",
+    "routes",
+    "middleware"
+  ],
   "ext": "js,json",
   "ignore": ["data/*"]
 }

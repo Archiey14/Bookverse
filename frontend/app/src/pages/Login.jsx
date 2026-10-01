@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Auth.css";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Pages like /book/:id send people here and expect them to come back
+  const from = location.state?.from || "/";
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -23,7 +26,7 @@ function Login() {
       const { data } = await axios.post("/api/auth/login", form);
       localStorage.setItem("bookverse-token", data.token);
       localStorage.setItem("bookverse-user", JSON.stringify(data.user));
-      navigate("/");
+      navigate(from);
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -148,7 +151,10 @@ function Login() {
           </button>
 
           <p className="auth-switch">
-            New to Bookverse? <Link to="/register">Create an account</Link>
+            New to Bookverse?{" "}
+            <Link to="/register" state={location.state}>
+              Create an account
+            </Link>
           </p>
         </form>
       </main>

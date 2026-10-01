@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 function BookCard({
   book,
   isWishlisted,
@@ -5,12 +7,14 @@ function BookCard({
   onAddToCart,
   onSelectBook,
 }) {
+  const navigate = useNavigate();
+
   return (
     <article className="book-card">
       <button
         className={`cover-wrap cover-${book.id % 5}${isWishlisted ? " saved" : ""}`}
-        onClick={() => onSelectBook(book)}
-        aria-label={`View details for ${book.title}`}
+        onClick={() => navigate(`/book/${book.id}`)}
+        aria-label={`Open the page for ${book.title}`}
       >
         <img
           src={`https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`}
@@ -41,7 +45,23 @@ function BookCard({
           {isWishlisted ? "♥" : "♡"}
         </span>
 
-        <span className="quick-view">Quick view</span>
+        <span
+          className="quick-view"
+          role="button"
+          tabIndex={0}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelectBook(book);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.stopPropagation();
+              onSelectBook(book);
+            }
+          }}
+        >
+          Quick view
+        </span>
       </button>
 
       <div className="book-meta">

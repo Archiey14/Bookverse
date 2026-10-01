@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 
 // Loads the catalog from the backend once.
+// `reload` fetches it again quietly (used after a new review changes a rating).
 export function useBooks() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,5 +16,14 @@ export function useBooks() {
       .finally(() => setLoading(false));
   }, []);
 
-  return { books, loading, loadError };
+  const reload = useCallback(async () => {
+    try {
+      const { data } = await axios.get("/api/books");
+      setBooks(data);
+    } catch {
+      // keep showing the books we already have
+    }
+  }, []);
+
+  return { books, loading, loadError, reload };
 }

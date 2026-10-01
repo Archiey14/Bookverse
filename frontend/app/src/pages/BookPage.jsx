@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import SidePanel from "../components/SidePanel";
 import BookCard from "../components/BookCard";
+import Reviews from "../components/Reviews";
 import { useBooks } from "../hooks/useBooks";
 import { useShop } from "../hooks/useShop";
 import { useScrollLock } from "../hooks/useScrollLock";
@@ -13,7 +14,7 @@ import "../App.css";
 function BookPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { books, loading, loadError } = useBooks();
+  const { books, loading, loadError, reload } = useBooks();
   const {
     cart,
     wishlist,
@@ -225,12 +226,16 @@ function BookPage() {
                 </div>
 
                 <small className="demo-note">
-                  Book preview and reader reviews are sample information.
+                  Book previews and starting ratings are sample information.
                 </small>
               </div>
             </div>
           )}
         </section>
+
+        {book && (
+          <Reviews key={book.id} bookId={book.id} onChanged={reload} />
+        )}
 
         {related.length > 0 && (
           <section className="catalog-section">

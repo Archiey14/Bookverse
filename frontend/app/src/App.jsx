@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -31,7 +31,6 @@ function App() {
     checkout,
   } = useShop(books);
 
-  // Other pages (like /book/:id) send people here with a target to scroll to
   const location = useLocation();
   const initialTarget = location.state?.goTo;
 
@@ -41,34 +40,22 @@ function App() {
   );
   const [catalogKey, setCatalogKey] = useState(0);
 
-  useScrollLock(Boolean(panel || selectedBook));
-
-  useEffect(() => {
-    if (loading || !initialTarget) return;
-    const id = initialTarget === "about" ? "about" : "catalog";
-    document.getElementById(id)?.scrollIntoView();
-  }, [loading, initialTarget]);
-
   const categories = useMemo(
-    () => ["All Books", ...new Set(books.map((book) => book.category))],
+    () => [
+      "All Books",
+      ...new Set(books.map((book) => book.category).filter(Boolean)),
+    ],
     [books],
   );
 
+  useScrollLock(Boolean(panel || selectedBook));
+
   function goTo(target) {
-    if (target === "top") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-
-    if (target === "about") {
-      document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-
-    // Discover / Bestsellers: reset the catalog's filters and jump to it
     setCollection(target === "bestsellers" ? "bestsellers" : "all");
     setCatalogKey((key) => key + 1);
-    document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("catalog")
+      ?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (
@@ -101,7 +88,6 @@ function App() {
         )}
 
         <About />
-
         <Footer onNotify={notify} />
       </main>
 
@@ -121,7 +107,9 @@ function App() {
 
       <BookDetails
         book={selectedBook}
-        isWishlisted={selectedBook ? wishlist.includes(selectedBook.id) : false}
+        isWishlisted={
+          selectedBook ? wishlist.includes(selectedBook.id) : false
+        }
         onClose={() => setSelectedBook(null)}
         onAddToCart={addToCart}
         onToggleWishlist={toggleWishlist}

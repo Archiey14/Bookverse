@@ -4,6 +4,9 @@ import booksRouter from "./routes/books.js";
 import reviewsRouter from "./routes/reviews.js";
 import authRouter from "./routes/auth.js";
 import { PORT } from "./config.js";
+import "dotenv/config";
+import paymentsRouter from "./routes/payments.js";
+
 
 const app = express();
 
@@ -13,6 +16,7 @@ app.use(express.json());
 app.use("/api/books/:id/reviews", reviewsRouter);
 app.use("/api/books", booksRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/payments", paymentsRouter);
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "BookVerse API is working!" });

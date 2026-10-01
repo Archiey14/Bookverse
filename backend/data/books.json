@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "category": "Self-Help",
+    "price": 499,
+    "rating": 4.8,
+    "stock": 25,
+    "cover": "https://placehold.co/300x450?text=Atomic+Habits",
+    "description": "A practical guide to building good habits and breaking bad ones."
+  },
+  {
+    "id": 2,
+    "title": "The Alchemist",
+    "author": "Paulo Coelho",
+    "category": "Fiction",
+    "price": 299,
+    "rating": 4.6,
+    "stock": 40,
+    "cover": "https://placehold.co/300x450?text=The+Alchemist",
+    "description": "A shepherd's journey in search of his personal legend."
+  },
+  {
+    "id": 3,
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "category": "Technology",
+    "price": 799,
+    "rating": 4.5,
+    "stock": 15,
+    "cover": "https://placehold.co/300x450?text=Clean+Code",
+    "description": "A handbook of agile software craftsmanship."
+  }
+]

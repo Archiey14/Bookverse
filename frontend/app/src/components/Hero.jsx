@@ -4,7 +4,7 @@ const spines = [
   { w: 30, h: 146, color: "#e8a33d" },
   { w: 46, h: 188, color: "#4a3b6b" },
   { w: 36, h: 214, color: "#a63d40" },
-  { w: 32, h: 158, color: "#2a2623" },
+  { w: 32, h: 158, color: "#5f7d5b" },
   { w: 42, h: 196, color: "#c98622" },
   { w: 36, h: 176, color: "#3c6e8f" },
   { w: 30, h: 208, color: "#6b3f2a" },

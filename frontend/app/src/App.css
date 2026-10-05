@@ -766,7 +766,6 @@ select:focus-visible {
   gap: 20px;
   padding: 31px 10%;
   border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
   background: #f6f5f0;
 }
 
@@ -1738,7 +1737,7 @@ select:focus-visible {
   min-height: 460px;
   padding: 56px 9% 0;
   align-items: end;
-  background: var(--wall-deep);
+  background: var(--char);
 }
 
 .hero-copy {
@@ -1749,7 +1748,7 @@ select:focus-visible {
 
 .hero h1 {
   margin: 0 0 18px;
-  color: var(--ink);
+  color: var(--cream-text);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
@@ -1757,9 +1756,18 @@ select:focus-visible {
 .hero-copy > p {
   max-width: 420px;
   margin-bottom: 28px;
-  color: #4f3a22;
+  color: #d8c3a0;
   font-size: 17px;
   line-height: 1.65;
+}
+
+.hero .primary-button {
+  background: var(--amber);
+  color: var(--on-amber);
+}
+
+.hero .primary-button:hover {
+  background: var(--amber-dark);
 }
 
 .hero-shelf {
@@ -2709,6 +2717,118 @@ main {
   animation: toast-life 2.2s ease forwards;
 }
 
+/* ===== Newsletter card: one tidy, centred block ===== */
+
+.newsletter {
+  display: block;
+  padding: 72px 8%;
+  background: var(--paper);
+}
+
+.newsletter-card {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 48px;
+  padding: 44px 52px;
+  border-radius: 14px;
+  background: var(--wall);
+  box-shadow: 0 6px 0 var(--board-edge), 0 18px 40px #3b230026;
+}
+
+.newsletter-card h2 {
+  margin: 12px 0 10px;
+  font-size: clamp(30px, 3.4vw, 40px);
+}
+
+.newsletter-card p {
+  max-width: 440px;
+  margin: 0;
+  color: #4f3a22;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.newsletter form {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #c9ab7c;
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.newsletter form:focus-within {
+  border-color: var(--board-edge);
+  box-shadow: 0 0 0 3px #e8a33d40;
+}
+
+.newsletter input {
+  flex: 1;
+  height: 46px;
+  padding: 0 14px;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.newsletter input::placeholder {
+  color: #8a6f4d;
+}
+
+/* Remove the browser's own outline inside the box; the box itself lights up */
+.newsletter input:focus-visible {
+  outline: none;
+}
+
+.newsletter form button {
+  height: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px;
+  border-radius: 8px;
+  background: var(--amber);
+  color: var(--on-amber);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.newsletter form button:hover {
+  background: var(--amber-dark);
+}
+
+.newsletter form button span {
+  margin-left: 0;
+}
+
+@media (max-width: 900px) {
+  .newsletter-card {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 620px) {
+  .newsletter {
+    padding: 48px 5%;
+  }
+
+  .newsletter form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .newsletter form button {
+    justify-content: center;
+  }
+}
+
 @keyframes fade-out {
   to {
     opacity: 0;
@@ -2725,6 +2845,262 @@ main {
   to {
     opacity: 0;
     transform: translateY(18px) scale(0.98);
+  }
+}
+
+/* ===== Footer area redesign: benefits, newsletter, quote, footer bar =====
+   Every block shares one content width (--gutter) so left and right edges
+   line up from the benefit strip all the way down to the footer. */
+
+.benefit-strip,
+.newsletter,
+.quote-banner,
+.site-footer {
+  --gutter: max(24px, calc((100% - 1180px) / 2));
+}
+
+/* --- Benefit strip: three equal columns, icon badge + text --- */
+.benefit-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  padding: 36px var(--gutter);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.benefit-strip > .benefit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px 24px;
+}
+
+.benefit-strip > .benefit + .benefit {
+  border-left: 1px solid var(--line);
+}
+
+.benefit-strip > .benefit > .benefit-icon {
+  flex: 0 0 auto;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 1px solid #c9ab7c;
+  border-radius: 50%;
+  background: var(--wall);
+  color: var(--board-edge);
+  font-size: 0;
+}
+
+.benefit-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.benefit-text {
+  display: grid;
+  gap: 3px;
+}
+
+.benefit-strip .benefit-text b {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.benefit-strip .benefit-text small {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* --- Newsletter: one card, copy on the left, form on the right --- */
+.newsletter {
+  padding: 64px var(--gutter) 72px;
+}
+
+.newsletter-card {
+  max-width: none;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 56px;
+  padding: 48px 56px;
+}
+
+.newsletter-copy {
+  display: grid;
+  justify-items: start;
+}
+
+.newsletter-card h2 {
+  margin: 14px 0 12px;
+  line-height: 1.1;
+}
+
+.newsletter form {
+  justify-self: stretch;
+  min-width: 0;
+}
+
+/* --- Quote banner: centred, comfortable line length --- */
+.quote-banner {
+  padding: 84px var(--gutter) 76px;
+}
+
+.quote-banner .quote-mark {
+  height: 44px;
+  font-size: 76px;
+  line-height: 1;
+}
+
+.quote-banner p {
+  max-width: 780px;
+  margin: 14px auto 26px;
+  color: var(--cream-text);
+  font-size: clamp(26px, 3.2vw, 38px);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.quote-banner .quote-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #c9b08a;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+
+.quote-credit::before,
+.quote-credit::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--amber);
+  opacity: 0.7;
+}
+
+/* --- Footer bar: brand | tagline | legal, on one aligned row --- */
+.site-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 0;
+  padding: 28px var(--gutter);
+  font-size: 14px;
+}
+
+.site-footer .brand {
+  justify-self: start;
+  font-size: 22px;
+}
+
+.site-footer .brand-mark {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+}
+
+.footer-tagline {
+  text-align: center;
+}
+
+.footer-legal {
+  justify-self: end;
+  text-align: right;
+}
+
+@media (max-width: 900px) {
+  .benefit-strip {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  .benefit-strip > .benefit {
+    flex-direction: column;
+    gap: 12px;
+    padding: 4px 14px;
+    text-align: center;
+  }
+
+  .benefit-text {
+    justify-items: center;
+  }
+
+  .newsletter-card {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 36px 28px;
+  }
+
+  .site-footer {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .site-footer .brand,
+  .footer-legal {
+    justify-self: center;
+  }
+
+  .footer-legal {
+    text-align: center;
+  }
+}
+
+@media (max-width: 620px) {
+  .benefit-strip {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 12px var(--gutter);
+  }
+
+  .benefit-strip > .benefit {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    text-align: left;
+  }
+
+  .benefit-strip > .benefit + .benefit {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .benefit-text {
+    justify-items: start;
+  }
+
+  .newsletter {
+    padding: 40px 16px 48px;
+  }
+
+  .newsletter-card {
+    padding: 30px 22px;
+  }
+
+  .quote-banner {
+    padding: 60px var(--gutter) 52px;
+  }
+
+  .site-footer {
+    padding: 24px var(--gutter);
   }
 }
 

@@ -10,6 +10,8 @@ function BookCatalog({
   onToggleWishlist,
   onAddToCart,
   onSelectBook,
+  cart,
+  onChangeQuantity,
 }) {
   const [category, setCategory] = useState("All Books");
   const [query, setQuery] = useState("");
@@ -118,6 +120,8 @@ function BookCatalog({
               onToggleWishlist={onToggleWishlist}
               onAddToCart={onAddToCart}
               onSelectBook={onSelectBook}
+              quantity={cart[book.id] || 0}
+              onChangeQuantity={onChangeQuantity}
             />
           ))}
         </div>

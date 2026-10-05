@@ -6,6 +6,8 @@ function BookCard({
   onToggleWishlist,
   onAddToCart,
   onSelectBook,
+  quantity = 0,
+  onChangeQuantity,
 }) {
   const navigate = useNavigate();
 
@@ -81,9 +83,27 @@ function BookCard({
 
       <div className="card-bottom">
         <b>${book.price.toFixed(2)}</b>
-        <button onClick={() => onAddToCart(book)}>
-          Add to bag <span>＋</span>
-        </button>
+        {quantity > 0 ? (
+          <div className="card-quantity" aria-label={`${book.title} quantity in bag`}>
+            <button
+              onClick={() => onChangeQuantity(book.id, -1)}
+              aria-label="Remove one from bag"
+            >
+              −
+            </button>
+            <span>{quantity}</span>
+            <button
+              onClick={() => onChangeQuantity(book.id, 1)}
+              aria-label="Add one more to bag"
+            >
+              ＋
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => onAddToCart(book)}>
+            Add to bag <span>＋</span>
+          </button>
+        )}
       </div>
     </article>
   );

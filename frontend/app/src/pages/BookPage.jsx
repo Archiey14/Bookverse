@@ -257,6 +257,8 @@ function BookPage() {
                   onToggleWishlist={toggleWishlist}
                   onAddToCart={addToCart}
                   onSelectBook={(selected) => navigate(`/book/${selected.id}`)}
+                  quantity={cart[item.id] || 0}
+                  onChangeQuantity={changeQuantity}
                 />
               ))}
             </div>

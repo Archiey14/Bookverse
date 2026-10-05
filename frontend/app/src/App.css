@@ -19,6 +19,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 76px;
 }
 
 body {
@@ -66,6 +67,9 @@ select:focus-visible {
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   height: 76px;
   padding: 0 7.2%;
   display: flex;
@@ -672,6 +676,47 @@ select:focus-visible {
 
 .card-bottom button span {
   margin-left: 6px;
+}
+
+.card-bottom > button,
+.card-bottom .card-quantity {
+  width: 108px;
+  height: 36px;
+}
+
+.card-bottom > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.card-bottom .card-quantity {
+  display: flex;
+  align-items: center;
+  border: 1px solid #354c3c;
+  border-radius: 2px;
+}
+
+.card-bottom .card-quantity button {
+  flex: 0 0 36px;
+  height: 100%;
+  padding: 0;
+  background: transparent;
+  color: #354c3c;
+  font-size: 16px;
+}
+
+.card-bottom .card-quantity button:hover {
+  background: #354c3c;
+  color: #fff;
+}
+
+.card-quantity span {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .empty-results {

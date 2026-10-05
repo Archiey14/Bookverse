@@ -114,6 +114,8 @@ function App() {
             onToggleWishlist={toggleWishlist}
             onAddToCart={addToCart}
             onSelectBook={setSelectedBook}
+            cart={cart}
+            onChangeQuantity={changeQuantity}
           />
         )}
 

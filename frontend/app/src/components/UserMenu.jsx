@@ -14,10 +14,11 @@ function UserMenu() {
   const [user, setUser] = useState(readUser);
 
   function logout() {
-    localStorage.removeItem("bookverse-token");
-    localStorage.removeItem("bookverse-user");
-    setUser(null);
-  }
+  localStorage.removeItem("bookverse-token");
+  localStorage.removeItem("bookverse-user");
+  window.dispatchEvent(new Event("bookverse-auth-change"));
+  setUser(null);
+}
 
   if (!user) {
     return (
@@ -34,6 +35,13 @@ function UserMenu() {
       <span className="user-greeting">
         Hi, <b>{firstName}</b>
       </span>
+      
+      {user.role === "admin" && (
+        <Link className="sign-in" to="/admin">
+          Admin dashboard
+        </Link>
+      )}
+
       <button className="sign-in" onClick={logout}>
         Log out
       </button>

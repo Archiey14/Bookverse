@@ -1,58 +1,79 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { read, write } from "../db.js";
+import { read, update } from "../db.js";
 import { JWT_SECRET } from "../config.js";
 
 const router = Router();
-const SECRET = JWT_SECRET;
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+  const normalizedName = String(name ?? "").trim();
+  const normalizedEmail = String(email ?? "").trim().toLowerCase();
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "Name, email and password are required" });
-  }
-
-  const users = await read("users");
-
-  if (users.find((u) => u.email === email)) {
-    return res.status(400).json({ message: "Email already registered" });
+  if (!normalizedName || !normalizedEmail || !password) {
+    return res.status(400).json({
+      message: "Name, email and password are required",
+    });
   }
 
   const user = {
     id: Date.now(),
-    name,
-    email,
+    name: normalizedName,
+    email: normalizedEmail,
     password: await bcrypt.hash(password, 10),
     role: "user",
   };
 
-  users.push(user);
-  await write("users", users);
+  const created = await update("users", (users) => {
+    if (
+      users.some(
+        (existing) =>
+          String(existing.email).toLowerCase() === normalizedEmail,
+      )
+    ) {
+      return false;
+    }
 
-  const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: "7d" });
+    users.push(user);
+    return true;
+  });
 
-  res.status(201).json({
+  if (!created) {
+    return res.status(400).json({ message: "Email already registered" });
+  }
+
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  return res.status(201).json({
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
   });
 });
 
-
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
+  const normalizedEmail = String(req.body?.email ?? "").trim().toLowerCase();
+  const password = req.body?.password;
   const users = await read("users");
-  const user = users.find((u) => u.email === email);
+  const user = users.find(
+    (entry) => String(entry.email).toLowerCase() === normalizedEmail,
+  );
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || !(await bcrypt.compare(password ?? "", user.password))) {
     return res.status(401).json({ message: "Invalid email or password" });
   }
 
-  const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: "7d" });
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    JWT_SECRET,
+    { expiresIn: "7d" },
+  );
 
-  res.json({
+  return res.json({
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
   });

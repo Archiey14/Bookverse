@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import axios from "axios";
 
 function readSaved(key, fallback) {
   try {
@@ -12,16 +13,13 @@ function save(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-// Cart, wishlist, orders, side panel and toast: shared by every page.
-// Everything is saved in localStorage, so pages stay in sync.
+// MongoDB stores each signed-in user's bag, wishlist, and orders separately.
 export function useShop(books) {
-  const [cart, setCart] = useState(() => readSaved("bookverse-cart", {}));
+  const [cart, setCart] = useState({});
   const [wishlist, setWishlist] = useState(() =>
-    readSaved("bookverse-wishlist", []),
+    readSaved("bookverse-wishlist-guest", []),
   );
-  const [orders, setOrders] = useState(() =>
-    readSaved("bookverse-orders", []),
-  );
+  const [orders, setOrders] = useState([]);
   const [panel, setPanel] = useState("");
   const [toast, setToast] = useState("");
   const toastTimer = useRef(null);
@@ -29,6 +27,61 @@ export function useShop(books) {
   useEffect(() => {
     const timer = toastTimer;
     return () => window.clearTimeout(timer.current);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    let loadVersion = 0;
+
+    async function loadAccountData() {
+      const version = ++loadVersion;
+      const token = localStorage.getItem("bookverse-token");
+
+      if (!token) {
+        if (active && version === loadVersion) {
+          setCart({});
+          setWishlist(readSaved("bookverse-wishlist-guest", []));
+          setOrders([]);
+        }
+        return;
+      }
+
+      try {
+        const headers = { Authorization: "Bearer " + token };
+        const [stateResponse, ordersResponse] = await Promise.all([
+          axios.get("/api/account/state", { headers }),
+          axios.get("/api/payments/orders", { headers }),
+        ]);
+
+        if (active && version === loadVersion) {
+          setCart(stateResponse.data.cart ?? {});
+          setWishlist(stateResponse.data.wishlist ?? []);
+          setOrders(ordersResponse.data ?? []);
+        }
+      } catch {
+        if (active && version === loadVersion) {
+          setCart({});
+          setWishlist([]);
+          setOrders([]);
+        }
+      }
+    }
+
+    function handleAuthChange() {
+      loadVersion += 1;
+      setCart({});
+      setWishlist(readSaved("bookverse-wishlist-guest", []));
+      setOrders([]);
+      loadAccountData();
+    }
+
+    window.addEventListener("bookverse-auth-change", handleAuthChange);
+    loadAccountData();
+
+    return () => {
+      active = false;
+      window.removeEventListener("bookverse-auth-change", handleAuthChange);
+    };
   }, []);
 
   const cartCount = Object.values(cart).reduce(
@@ -52,31 +105,53 @@ export function useShop(books) {
     toastTimer.current = window.setTimeout(() => setToast(""), 2200);
   }
 
+  async function saveShoppingState(nextCart, nextWishlist) {
+    const token = localStorage.getItem("bookverse-token");
+    if (!token) return;
+
+    await axios.put(
+      "/api/account/state",
+      { cart: nextCart, wishlist: nextWishlist },
+      { headers: { Authorization: "Bearer " + token } },
+    );
+  }
+
   function addToCart(book) {
+    if (!localStorage.getItem("bookverse-token")) {
+      notify("Please sign in before adding books to your bag.");
+      return;
+    }
+
     const inCart = cart[book.id] || 0;
 
     if (typeof book.stock === "number" && inCart >= book.stock) {
       notify(
         book.stock === 0
-          ? `${book.title} is out of stock`
-          : `Only ${book.stock} in stock`,
+          ? book.title + " is out of stock"
+          : "Only " + book.stock + " in stock",
       );
       return;
     }
 
     const nextCart = { ...cart, [book.id]: inCart + 1 };
-
     setCart(nextCart);
-    save("bookverse-cart", nextCart);
-    notify(`${book.title} added to your bag`);
+    saveShoppingState(nextCart, wishlist).catch(() =>
+      notify("Could not save your bag. Please try again."),
+    );
+    notify(book.title + " added to your bag");
   }
 
   function changeQuantity(id, amount) {
+    if (!localStorage.getItem("bookverse-token")) {
+      notify("Please sign in to update your bag.");
+      return;
+    }
+
     const book = books.find((item) => item.id === Number(id));
     const current = cart[id] || 0;
 
     if (amount > 0 && book && current >= book.stock) {
-      notify(`Only ${book.stock} in stock`);
+      notify("Only " + book.stock + " in stock");
       return;
     }
 
@@ -88,7 +163,9 @@ export function useShop(books) {
     }
 
     setCart(nextCart);
-    save("bookverse-cart", nextCart);
+    saveShoppingState(nextCart, wishlist).catch(() =>
+      notify("Could not save your bag. Please try again."),
+    );
   }
 
   function toggleWishlist(book) {
@@ -97,7 +174,15 @@ export function useShop(books) {
       : [...wishlist, book.id];
 
     setWishlist(nextWishlist);
-    save("bookverse-wishlist", nextWishlist);
+
+    if (localStorage.getItem("bookverse-token")) {
+      saveShoppingState(cart, nextWishlist).catch(() =>
+        notify("Could not save your wishlist. Please try again."),
+      );
+    } else {
+      save("bookverse-wishlist-guest", nextWishlist);
+    }
+
     notify(
       nextWishlist.includes(book.id)
         ? "Saved to your wishlist"
@@ -105,27 +190,115 @@ export function useShop(books) {
     );
   }
 
-  function checkout() {
+  async function checkout() {
+    const token = localStorage.getItem("bookverse-token");
+    if (!token) {
+      notify("Please sign in before paying.");
+      return;
+    }
+
     if (cartCount === 0) return;
 
-    const nextOrders = [
-      {
-        id: Date.now(),
-        date: new Date().toLocaleDateString(),
-        total: cartTotal,
-        status: "Order placed",
-      },
-      ...orders,
-    ];
+    try {
+      if (!window.Razorpay) {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = resolve;
+          script.onerror = () => reject(new Error("Could not load Razorpay."));
+          document.body.appendChild(script);
+        });
+      }
 
-    setOrders(nextOrders);
-    save("bookverse-orders", nextOrders);
+      const items = Object.entries(cart).map(([bookId, quantity]) => ({
+        bookId: Number(bookId),
+        quantity: Number(quantity),
+      }));
 
-    setCart({});
-    save("bookverse-cart", {});
+      const headers = { Authorization: "Bearer " + token };
+      const { data: order } = await axios.post(
+        "/api/payments/create-order",
+        { items },
+        { headers },
+      );
 
-    setPanel("");
-    notify("Demo order placed successfully!");
+      const paymentWindow = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Bookverse",
+        description: "Book order",
+        order_id: order.orderId,
+
+        handler: async (paymentResponse) => {
+          try {
+            const { data: result } = await axios.post(
+              "/api/payments/verify",
+              paymentResponse,
+              { headers },
+            );
+
+            if (!result.success) {
+              throw new Error("Payment could not be verified.");
+            }
+
+            const fallbackOrder = {
+              id: paymentResponse.razorpay_order_id,
+              date: new Date().toLocaleDateString(),
+              total: order.amount / 100,
+              status: "Paid",
+            };
+            setOrders((current) => [
+              fallbackOrder,
+              ...current.filter((entry) => entry.id !== fallbackOrder.id),
+            ]);
+
+            try {
+              const { data: userOrders } = await axios.get(
+                "/api/payments/orders",
+                { headers },
+              );
+              setOrders(userOrders);
+            } catch {
+              // Keep the verified order visible if refreshing the list fails.
+            }
+
+            setCart({});
+            let cartSyncWarning = "";
+            try {
+              await saveShoppingState({}, wishlist);
+            } catch {
+              cartSyncWarning = " Your bag may need refreshing.";
+            }
+
+            setPanel("");
+            notify("Payment successful! Your order is placed." + cartSyncWarning);
+          } catch (error) {
+            notify(
+              error.response?.data?.message ||
+                error.message ||
+                "Payment verification failed.",
+            );
+          }
+        },
+
+        modal: {
+          ondismiss: () => notify("Payment window closed."),
+        },
+      });
+
+      paymentWindow.on("payment.failed", (event) => {
+        notify(event.error?.description || "Payment failed. Please try again.");
+      });
+
+      paymentWindow.open();
+    } catch (error) {
+      notify(
+        error.response?.data?.message ||
+          error.message ||
+          "Could not start checkout.",
+      );
+    }
   }
 
   return {

@@ -10,6 +10,7 @@ import About from "./components/About";
 import { useBooks } from "./hooks/useBooks";
 import { useShop } from "./hooks/useShop";
 import { useScrollLock } from "./hooks/useScrollLock";
+import BookCard from "./components/BookCard";
 import "./App.css";
 
 function App() {
@@ -47,6 +48,35 @@ function App() {
     ],
     [books],
   );
+  const recommendations = useMemo(() => {
+  const selectedIds = new Set([
+    ...wishlist,
+    ...Object.entries(cart)
+      .filter(([, quantity]) => Number(quantity) > 0)
+      .map(([id]) => Number(id)),
+  ]);
+
+  const preferredCategories = new Set(
+    books
+      .filter((book) => selectedIds.has(book.id))
+      .map((book) => book.category),
+  );
+
+  function score(book) {
+    return (
+      (preferredCategories.has(book.category) ? 10 : 0) +
+      (book.bestseller ? 3 : 0) +
+      (book.featured ? 2 : 0) +
+      (Number(book.rating) || 0)
+    );
+  }
+
+  return books
+    .filter((book) => !selectedIds.has(book.id))
+    .sort((a, b) => score(b) - score(a))
+    .slice(0, 4);
+}, [books, cart, wishlist]);
+
 
   useScrollLock(Boolean(panel || selectedBook));
 
@@ -86,6 +116,31 @@ function App() {
             onSelectBook={setSelectedBook}
           />
         )}
+
+        {!loading && !loadError && recommendations.length > 0 && (
+  <section className="catalog-section">
+    <div className="section-heading">
+      <div>
+        <span className="eyebrow">FOR YOU</span>
+        <h2>Recommended reads</h2>
+        <p>Picked from the books in your bag and wishlist.</p>
+      </div>
+    </div>
+
+    <div className="book-grid">
+      {recommendations.map((book) => (
+        <BookCard
+          key={book.id}
+          book={book}
+          isWishlisted={wishlist.includes(book.id)}
+          onToggleWishlist={toggleWishlist}
+          onAddToCart={addToCart}
+          onSelectBook={setSelectedBook}
+        />
+      ))}
+    </div>
+  </section>
+)}
 
         <About />
         <Footer onNotify={notify} />

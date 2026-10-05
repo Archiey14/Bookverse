@@ -1,9 +1,11 @@
 import { Router } from "express";
 import crypto from "crypto";
 import Razorpay from "razorpay";
-import { read, write } from "../db.js";
+import { read, update } from "../db.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const router = Router();
+const USD_TO_INR_DEMO_RATE = 84;
 
 function getRazorpay() {
   const keyId = process.env.RAZORPAY_KEY_ID;
@@ -25,7 +27,27 @@ function getRazorpay() {
 
 // Front end sends book IDs and quantities.
 // The backend looks up prices itself before creating the Razorpay order.
-router.post("/create-order", async (req, res) => {
+router.get("/orders", requireAuth, async (req, res) => {
+  try {
+    const allOrders = await read("orders");
+
+    const userOrders = allOrders
+      .filter((order) => String(order.userId) === String(req.user.id))
+      .map((order) => ({
+        id: order.id,
+        date: new Date(order.paidAt || order.createdAt).toLocaleDateString(),
+        total: Number(order.amount) / 100,
+        status: order.status === "paid" ? "Paid" : "Pending",
+      }));
+
+    return res.json(userOrders);
+  } catch (error) {
+    console.error("Could not load user orders:", error.message);
+    return res.status(500).json({ message: "Could not load your orders." });
+  }
+});
+
+router.post("/create-order", requireAuth,async (req, res) => {
   try {
     const { items } = req.body;
 
@@ -45,7 +67,9 @@ router.post("/create-order", async (req, res) => {
         return res.status(400).json({ message: "Invalid cart item." });
       }
 
-      const pricePaise = Math.round(Number(book.price) * 100);
+      const pricePaise = Math.round(
+       Number(book.price) * USD_TO_INR_DEMO_RATE * 100,
+      );
 
       if (!Number.isFinite(pricePaise) || pricePaise <= 0) {
         return res.status(400).json({ message: "Invalid book price." });
@@ -67,16 +91,17 @@ router.post("/create-order", async (req, res) => {
       receipt: `bv_${Date.now()}`,
     });
 
-    const orders = await read("orders");
-    orders.push({
+    await update("orders", (orders) => {
+      orders.push({
       id: razorpayOrder.id,
+      userId: req.user.id,
       items: orderItems,
       amount: totalPaise,
       currency: "INR",
       status: "pending",
       createdAt: new Date().toISOString(),
+      });
     });
-    await write("orders", orders);
 
     return res.json({
       keyId: process.env.RAZORPAY_KEY_ID,
@@ -93,7 +118,7 @@ router.post("/create-order", async (req, res) => {
 });
 
 // Verify Razorpay's signed checkout response on the backend.
-router.post("/verify", async (req, res) => {
+router.post("/verify", requireAuth, async (req, res) => {
   try {
     const {
       razorpay_order_id: orderId,
@@ -106,8 +131,9 @@ router.post("/verify", async (req, res) => {
     }
 
     const orders = await read("orders");
-    const order = orders.find((entry) => entry.id === orderId);
-
+    const order = orders.find(
+      (entry) => entry.id === orderId && String(entry.userId) === String(req.user.id),
+    );
     if (!order) {
       return res.status(404).json({ message: "Payment order not found." });
     }
@@ -133,10 +159,15 @@ router.post("/verify", async (req, res) => {
       return res.status(400).json({ message: "Payment signature is invalid." });
     }
 
-    order.status = "paid";
-    order.paymentId = paymentId;
-    order.paidAt = new Date().toISOString();
-    await write("orders", orders);
+    await update("orders", (currentOrders) => {
+      const currentOrder = currentOrders.find(
+        (entry) => entry.id === orderId && String(entry.userId) === String(req.user.id),
+      );
+      if (!currentOrder) return;
+      currentOrder.status = "paid";
+      currentOrder.paymentId = paymentId;
+      currentOrder.paidAt = new Date().toISOString();
+    });
 
     return res.json({ success: true, message: "Payment verified successfully." });
   } catch (error) {

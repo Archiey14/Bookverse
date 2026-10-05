@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Auth.css";
 import PageLayout from "../components/PageLayout";
 import ShelfArt from "../components/ShelfArt";
+import GoogleSignInButton from "../components/GoogleSignInButton";
 
 function Login() {
   const navigate = useNavigate();
@@ -38,6 +39,25 @@ function Login() {
       setLoading(false);
     }
   }
+
+  const handleGoogleCredential = useCallback(async (credential) => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const { data } = await axios.post("/api/auth/google", { credential });
+      localStorage.setItem("bookverse-token", data.token);
+      localStorage.setItem("bookverse-user", JSON.stringify(data.user));
+      window.dispatchEvent(new Event("bookverse-auth-change"));
+      navigate(from);
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Google sign-in failed. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [from, navigate]);
 
   return (
     <PageLayout mode="login">
@@ -122,6 +142,12 @@ function Login() {
             >
               {loading ? "Signing in..." : "Sign in"} <span>→</span>
             </button>
+
+            <div className="auth-divider"><span>or continue with</span></div>
+            <GoogleSignInButton
+              onCredential={handleGoogleCredential}
+              onError={setError}
+            />
 
             <p className="auth-switch">
               New to Bookverse?{" "}

@@ -33,7 +33,14 @@ async function startServer() {
       console.log("Server running on http://localhost:" + PORT);
     });
   } catch (error) {
-    console.error("Could not start Bookverse API:", error.message);
+    console.error("Could not start Bookverse API:", error);
+    console.dir(
+      [...(error.reason?.servers ?? [])].map(([host, server]) => ({
+        host,
+        error: server.error?.message,
+      })),
+      { depth: null },
+    );
     process.exit(1);
   }
 }

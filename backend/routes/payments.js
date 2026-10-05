@@ -3,9 +3,70 @@ import crypto from "crypto";
 import Razorpay from "razorpay";
 import { read, update } from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
+import nodemailer from "nodemailer";
 
 const router = Router();
 const USD_TO_INR_DEMO_RATE = 84;
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>\"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '\"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+}
+
+async function sendOrderConfirmation(order, user) {
+  const email = process.env.GMAIL_USER;
+  const appPassword = process.env.GMAIL_APP_PASSWORD;
+
+  if (!email || !appPassword) {
+    throw new Error("Gmail email settings are missing from backend/.env");
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: email,
+      pass: appPassword,
+    },
+  });
+
+  const itemRows = order.items
+    .map(
+      (item) =>
+        `<tr><td>${escapeHtml(item.title)}</td><td>${item.quantity}</td><td>₹${(
+          (item.pricePaise * item.quantity) /
+          100
+        ).toFixed(2)}</td></tr>`,
+    )
+    .join("");
+
+  const total = (order.amount / 100).toFixed(2);
+  const orderReference = escapeHtml(String(order.id).slice(-8));
+  const name = escapeHtml(user.name || "book lover");
+  const textItems = order.items
+    .map(
+      (item) =>
+        `${item.title} × ${item.quantity} — ₹${(
+          (item.pricePaise * item.quantity) /
+          100
+        ).toFixed(2)}`,
+    )
+    .join("\n");
+
+  await transporter.sendMail({
+    from: `Bookverse <${email}>`,
+    to: user.email,
+    subject: "Thank you for your Bookverse order",
+    text: `Hi ${user.name || "book lover"},\n\nThank you for your order!\n\n${textItems}\n\nTotal paid: ₹${total}\nOrder reference: ${orderReference}\n\nHappy reading,\nBookverse`,
+    html: `<div style="font-family:Arial,sans-serif;color:#29251f;max-width:600px;margin:auto"><h1 style="color:#79552c">Thank you for your order, ${name}!</h1><p>We’re glad you chose Bookverse. Here are your order details:</p><table style="width:100%;border-collapse:collapse"><thead><tr><th>Book</th><th>Qty</th><th>Price</th></tr></thead><tbody>${itemRows}</tbody></table><p><strong>Total paid: ₹${total}</strong></p><p>Order reference: ${orderReference}</p><p>Happy reading,<br>Bookverse</p></div>`,
+  });
+
+  return true;
+}
 
 function getRazorpay() {
   const keyId = process.env.RAZORPAY_KEY_ID;
@@ -169,7 +230,32 @@ router.post("/verify", requireAuth, async (req, res) => {
       currentOrder.paidAt = new Date().toISOString();
     });
 
-    return res.json({ success: true, message: "Payment verified successfully." });
+    let emailSent = Boolean(order.emailSentAt);
+    if (!emailSent) {
+      try {
+        const users = await read("users");
+        const user = users.find((entry) => String(entry.id) === String(req.user.id));
+        if (user?.email) {
+          emailSent = await sendOrderConfirmation(order, user);
+          if (emailSent) {
+            await update("orders", (currentOrders) => {
+              const currentOrder = currentOrders.find(
+                (entry) => entry.id === orderId && String(entry.userId) === String(req.user.id),
+              );
+              if (currentOrder) currentOrder.emailSentAt = new Date().toISOString();
+            });
+          }
+        }
+      } catch (emailError) {
+        console.error("Order confirmation email failed:", emailError.message);
+      }
+    }
+
+    return res.json({
+      success: true,
+      emailSent,
+      message: "Payment verified successfully.",
+    });
   } catch (error) {
     console.error("Payment verification failed:", error.message);
     return res.status(500).json({ message: "Could not verify payment." });

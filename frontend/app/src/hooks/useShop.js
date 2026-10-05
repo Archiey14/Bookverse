@@ -274,7 +274,13 @@ export function useShop(books) {
             }
 
             setPanel("");
-            notify("Payment successful! Your order is placed." + cartSyncWarning);
+            notify(
+              "Payment successful! Your order is placed." +
+                (result.emailSent
+                  ? " Confirmation sent to your email."
+                  : " Email confirmation could not be sent; check the email settings." ) +
+                cartSyncWarning,
+            );
           } catch (error) {
             notify(
               error.response?.data?.message ||

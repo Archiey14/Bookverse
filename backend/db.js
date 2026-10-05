@@ -18,7 +18,9 @@ const collections = {
       id: { type: Number, required: true, unique: true, index: true },
       name: String,
       email: { type: String, required: true, unique: true, lowercase: true, index: true },
-      password: { type: String, required: true },
+      // Google-created accounts do not have a local password.
+      password: String,
+      googleId: String,
       role: { type: String, default: "user" },
     },
     { strict: false, versionKey: false, collection: "users" },

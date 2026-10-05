@@ -1,14 +1,20 @@
 import { Link } from "react-router-dom";
 import { getStockStatus } from "../utils/stock";
+import { useExitTransition } from "../hooks/useExitTransition";
 
 function BookDetails({
-  book,
-  isWishlisted,
+  book: bookProp,
+  wishlist,
   onClose,
   onAddToCart,
   onToggleWishlist,
 }) {
+  // Keep the popup on screen while it animates out
+  const [book, closing] = useExitTransition(bookProp);
+
   if (!book) return null;
+
+  const isWishlisted = wishlist.includes(book.id);
 
   const { outOfStock, message } = getStockStatus(book);
 
@@ -20,9 +26,12 @@ function BookDetails({
   ].filter(Boolean);
 
   return (
-    <div className="overlay" onClick={onClose}>
+    <div
+      className={closing ? "overlay closing" : "overlay"}
+      onClick={onClose}
+    >
       <section
-        className="detail-modal"
+        className={closing ? "detail-modal closing" : "detail-modal"}
         role="dialog"
         aria-modal="true"
         aria-labelledby="book-detail-title"

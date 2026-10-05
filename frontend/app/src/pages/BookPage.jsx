@@ -22,6 +22,7 @@ function BookPage() {
     panel,
     setPanel,
     toast,
+    toastKey,
     notify,
     cartCount,
     cartTotal,
@@ -282,7 +283,11 @@ function BookPage() {
         onCheckout={checkout}
       />
 
-      {toast && <div className="toast">{toast}</div>}
+      {toast && (
+        <div className="toast" key={toastKey}>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

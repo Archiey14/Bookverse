@@ -22,6 +22,7 @@ function App() {
     panel,
     setPanel,
     toast,
+    toastKey,
     notify,
     cartCount,
     cartTotal,
@@ -164,15 +165,17 @@ function App() {
 
       <BookDetails
         book={selectedBook}
-        isWishlisted={
-          selectedBook ? wishlist.includes(selectedBook.id) : false
-        }
+        wishlist={wishlist}
         onClose={() => setSelectedBook(null)}
         onAddToCart={addToCart}
         onToggleWishlist={toggleWishlist}
       />
 
-      {toast && <div className="toast">{toast}</div>}
+      {toast && (
+        <div className="toast" key={toastKey}>
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

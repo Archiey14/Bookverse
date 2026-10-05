@@ -1,3 +1,5 @@
+import { useExitTransition } from "../hooks/useExitTransition";
+
 function MiniCover({ book }) {
   return (
     <div className={`mini-cover cover-${book.id % 5}`}>
@@ -15,7 +17,7 @@ function MiniCover({ book }) {
 }
 
 function SidePanel({
-  panel,
+  panel: panelProp,
   onClose,
   cart,
   books,
@@ -27,6 +29,9 @@ function SidePanel({
   onAddToCart,
   onCheckout,
 }) {
+  // Keep the panel on screen while it slides out
+  const [panel, closing] = useExitTransition(panelProp);
+
   if (!panel) return null;
 
   const title = {
@@ -36,9 +41,12 @@ function SidePanel({
   }[panel];
 
   return (
-    <div className="overlay" onClick={onClose}>
+    <div
+      className={closing ? "overlay closing" : "overlay"}
+      onClick={onClose}
+    >
       <aside
-        className="side-panel"
+        className={closing ? "side-panel closing" : "side-panel"}
         role="dialog"
         aria-modal="true"
         aria-labelledby="panel-title"

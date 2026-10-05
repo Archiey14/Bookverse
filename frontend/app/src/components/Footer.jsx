@@ -1,4 +1,4 @@
-function Footer({ onNotify }) {
+function Footer({ onNotify, showBar = true }) {
   function subscribe(event) {
     event.preventDefault();
     event.currentTarget.reset();
@@ -23,16 +23,6 @@ function Footer({ onNotify }) {
           <b>Read, love, repeat</b>
           <small>Easy 30-day returns</small>
         </div>
-      </section>
-
-      <section className="quote-banner">
-        <span className="quote-mark">“</span>
-        <p>
-          A book is a little world you can carry
-          <br />
-          with you wherever you go.
-        </p>
-        <span className="quote-credit">— THE BOOKVERSE PROMISE</span>
       </section>
 
       <section className="newsletter">
@@ -60,16 +50,28 @@ function Footer({ onNotify }) {
         </form>
       </section>
 
-      <footer className="site-footer">
-        <a className="brand" href="#top">
-          <span className="brand-mark">b.</span>
-          <span>
-            book<span className="brand-light">verse</span>
-          </span>
-        </a>
-        <span>Made for the love of a good story.</span>
-        <span>©Shnoor 2025 Bookverse</span>
-      </footer>
+      <section className="quote-banner">
+        <span className="quote-mark">“</span>
+        <p>
+          A book is a little world you can carry
+          <br />
+          with you wherever you go.
+        </p>
+        <span className="quote-credit">— THE BOOKVERSE PROMISE</span>
+      </section>
+
+      {showBar && (
+        <footer className="site-footer">
+          <a className="brand" href="#top">
+            <span className="brand-mark">b.</span>
+            <span>
+              book<span className="brand-light">verse</span>
+            </span>
+          </a>
+          <span>Made for the love of a good story.</span>
+          <span>©Shnoor 2025 Bookverse</span>
+        </footer>
+      )}
     </>
   );
 }

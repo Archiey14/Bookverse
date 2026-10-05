@@ -1,4 +1,5 @@
-/* Reader reviews on the book page. Colours match the rest of the site. */
+/* Reader reviews on the book page. Uses the same reading-room theme as the
+   rest of the site (colours come from the variables in App.css). */
 
 .reviews-layout {
   display: grid;
@@ -11,9 +12,10 @@
 
 .reviews-form-card {
   padding: 26px;
-  border: 1px solid var(--line, #e8e6df);
-  border-radius: 2px;
-  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 0 6px 0 var(--board-edge), 0 18px 40px #3b230022;
 }
 
 .reviews-form-card form {
@@ -23,8 +25,9 @@
 
 .reviews-form-card h3 {
   margin: 0;
-  font-family: var(--serif, Georgia, serif);
-  font-weight: 400;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 800;
   font-size: 24px;
   letter-spacing: -0.03em;
 }
@@ -32,14 +35,14 @@
 .reviews-field {
   display: grid;
   gap: 8px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  color: #3e4038;
+  color: var(--ink);
 }
 
 .reviews-field small {
   font-weight: 400;
-  color: #8a8b82;
+  color: var(--muted);
 }
 
 .reviews-picker {
@@ -51,7 +54,7 @@
   padding: 0 2px;
   border: 0;
   background: transparent;
-  color: #d9d6cc;
+  color: #d6bf98;
   cursor: pointer;
   font-size: 30px;
   line-height: 1;
@@ -63,25 +66,29 @@
 }
 
 .reviews-picker button.on {
-  color: #b08a5a;
+  color: var(--amber-dark);
 }
 
 .reviews-field textarea {
   width: 100%;
   padding: 12px;
-  border: 1px solid var(--line, #e8e6df);
-  border-radius: 2px;
-  background: #fff;
-  color: var(--ink, #24251f);
+  border: 1px solid #c9ab7c;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: var(--ink);
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.6;
   resize: vertical;
 }
 
 .reviews-field textarea::placeholder {
-  color: #a7a89f;
+  color: #a68e69;
+}
+
+.reviews-field textarea:focus {
+  border-color: var(--board-edge);
 }
 
 .reviews-count {
@@ -91,21 +98,21 @@
 .reviews-error,
 .reviews-notice {
   padding: 11px 13px;
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: 6px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .reviews-error {
-  border: 1px solid #ecd0cd;
-  background: #f8ecea;
-  color: #8a3b36;
+  border: 1px solid #e3b9ae;
+  background: #f8e4dc;
+  color: #8a2f25;
 }
 
 .reviews-notice {
-  border: 1px solid #d3dfca;
-  background: #f0f5ec;
-  color: #3f5a3a;
+  border: 1px solid #dccd8a;
+  background: #f3ecc8;
+  color: #5a4a12;
 }
 
 .reviews-actions {
@@ -127,16 +134,17 @@
 
 .reviews-signin h3 {
   margin: 0;
-  font-family: var(--serif, Georgia, serif);
-  font-weight: 400;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 800;
   font-size: 24px;
   letter-spacing: -0.03em;
 }
 
 .reviews-signin p {
   margin: 0;
-  color: #73756d;
-  font-size: 13px;
+  color: var(--muted);
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -150,13 +158,13 @@
 .reviews-empty {
   margin: 0;
   padding: 26px 0;
-  color: #73756d;
-  font-size: 13px;
+  color: var(--muted);
+  font-size: 14px;
 }
 
 .reviews-item {
   padding: 22px 0;
-  border-bottom: 1px solid var(--line, #e8e6df);
+  border-bottom: 1px solid #c9ab7c;
 }
 
 .reviews-item:first-child {
@@ -178,43 +186,44 @@
 }
 
 .reviews-item header b {
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .reviews-item time {
-  color: #8a8b82;
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 12px;
   white-space: nowrap;
 }
 
 .reviews-item p {
   margin: 10px 0 0;
-  color: #4d4f47;
-  font-size: 13px;
+  color: #4f3a22;
+  font-size: 14px;
   line-height: 1.75;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .reviews-stars {
-  color: #b08a5a;
+  color: var(--amber-dark);
   font-size: 14px;
   letter-spacing: 1px;
 }
 
 .reviews-stars span {
-  color: #d9d6cc;
+  color: #d6bf98;
 }
 
 .reviews-you {
   padding: 2px 8px;
   border-radius: 999px;
-  background: #e9efe4;
-  color: #354c3c;
+  background: var(--amber);
+  color: var(--on-amber);
   font-size: 10px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 @media (max-width: 860px) {

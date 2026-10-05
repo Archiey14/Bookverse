@@ -1,139 +1,158 @@
-/* Shared styles for the Login and Register pages.
-   Colours and fonts match the homepage (see App.css). */
+/* Login and Register pages.
+   These sit inside <PageLayout> (announcement bar, charcoal navbar, footer),
+   and the two halves reuse the homepage look:
+     left  = the hero (tan wall, bold heading, bookshelf on a wooden board)
+     right = the catalog (wood-panelled wall, cream cards with a shelf edge)
+   All colours come from the CSS variables in App.css. */
 
 .auth-page {
-  min-height: 100vh;
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: var(--paper, #fbfaf7);
-  color: var(--ink, #24251f);
+  color: var(--ink);
 }
 
-/* ---------- Left: decorative panel ---------- */
+/* ---------- Left: hero-style panel ---------- */
 
 .auth-art {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 24px;
-  padding: 40px 11%;
+  gap: 40px;
+  padding: 64px 0 0;
   overflow: hidden;
-  background: #f0f0e9;
-}
-
-.auth-art .brand {
-  align-self: flex-start;
+  background: var(--wall-deep);
 }
 
 .auth-art-copy {
-  max-width: 440px;
+  max-width: 520px;
+  padding: 0 10%;
 }
 
 .auth-art-copy h1 {
-  margin: 20px 0 16px;
-  font-family: var(--serif, Georgia, serif);
-  font-weight: 400;
-  font-size: clamp(38px, 4.2vw, 58px);
-  line-height: 1.04;
-  letter-spacing: -0.045em;
+  margin: 20px 0 18px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: clamp(40px, 4.6vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 
 .auth-art-copy h1 em {
-  color: #76816b;
-  font-weight: 400;
+  color: inherit;
+  font-style: normal;
+  font-weight: 800;
 }
 
 .auth-art-copy p {
-  max-width: 375px;
+  max-width: 420px;
   margin: 0;
-  color: #6c6e65;
-  font-size: 14px;
-  line-height: 1.8;
+  color: #4f3a22;
+  font-size: 17px;
+  line-height: 1.65;
 }
 
-.auth-art .hero-art {
-  height: 330px;
+/* Bookshelf: same markup/classes as the homepage hero, but it runs the full
+   width of the panel and rests on the bottom edge like the hero does. */
+.auth-art .auth-shelf {
+  width: 100%;
+  justify-self: stretch;
 }
 
-.auth-quote {
+.auth-art .auth-shelf .spines {
+  padding: 0 10%;
+}
+
+.auth-art .auth-shelf .board {
   margin: 0;
-  color: #717269;
-  font-family: var(--serif, Georgia, serif);
-  font-size: 13px;
-  font-style: italic;
 }
 
-/* ---------- Right: form panel ---------- */
+/* ---------- Right: catalog-style panel ---------- */
 
 .auth-panel {
   display: grid;
   place-items: center;
-  padding: 48px 6%;
+  padding: 56px 6%;
+  background-color: var(--wall);
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 139px,
+    #3b23000d 139px 141px
+  );
 }
 
 .auth-form {
-  width: min(400px, 100%);
+  width: min(430px, 100%);
   display: grid;
   gap: 20px;
-}
-
-.auth-mobile-brand {
-  display: none;
+  padding: 36px 34px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 0 6px 0 var(--board-edge), 0 18px 40px #3b230022;
 }
 
 .auth-back {
   justify-self: start;
-  color: #6a6c64;
-  font-size: 12px;
+  color: var(--board-edge);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .auth-back:hover {
-  color: #75836a;
+  color: var(--amber-dark);
 }
 
 .auth-form h2 {
   margin: 0;
-  font-family: var(--serif, Georgia, serif);
-  font-weight: 400;
-  font-size: 40px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-weight: 800;
+  font-size: 36px;
   line-height: 1.05;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
 }
 
 .auth-form h2 em {
-  color: #76816b;
-  font-weight: 400;
+  color: inherit;
+  font-style: normal;
+  font-weight: 800;
 }
 
 .auth-sub {
   margin: 10px 0 0;
-  color: #73756d;
-  font-size: 13px;
+  color: var(--muted);
+  font-size: 14px;
   line-height: 1.6;
 }
 
 .auth-form label {
   display: grid;
   gap: 8px;
-  font-size: 11px;
+  color: var(--ink);
+  font-size: 13px;
   font-weight: 600;
-  color: #3e4038;
 }
 
 .auth-form input {
   width: 100%;
   padding: 13px 12px;
-  border: 1px solid var(--line, #e8e6df);
-  border-radius: 2px;
-  background: #fff;
-  color: var(--ink, #24251f);
-  font-size: 13px;
+  border: 1px solid #c9ab7c;
+  border-radius: 6px;
+  background: #fffaf0;
+  color: var(--ink);
+  font-size: 14px;
   font-weight: 400;
 }
 
 .auth-form input::placeholder {
-  color: #a7a89f;
+  color: #a68e69;
+}
+
+.auth-form input:focus {
+  border-color: var(--board-edge);
 }
 
 .auth-password {
@@ -152,22 +171,23 @@
   padding: 4px;
   border: 0;
   background: transparent;
-  color: #53654f;
+  color: var(--board-edge);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .auth-password button:hover {
-  color: #75836a;
+  color: var(--amber-dark);
 }
 
 .auth-error {
   padding: 11px 13px;
-  border: 1px solid #ecd0cd;
-  border-radius: 2px;
-  background: #f8ecea;
-  color: #8a3b36;
-  font-size: 12px;
+  border: 1px solid #e3b9ae;
+  border-radius: 6px;
+  background: #f8e4dc;
+  color: #8a2f25;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -178,25 +198,26 @@
 }
 
 .auth-submit:disabled {
-  background: #b8b9b0;
+  background: #b9a584;
+  color: var(--paper);
   cursor: not-allowed;
 }
 
 .auth-switch {
   margin: 0;
-  color: #73756d;
-  font-size: 12px;
+  color: var(--muted);
+  font-size: 13px;
   text-align: center;
 }
 
 .auth-switch a {
-  color: #354c3c;
-  font-weight: 600;
-  border-bottom: 1px solid #b3c7a8;
+  color: var(--board-edge);
+  font-weight: 700;
+  border-bottom: 1px solid var(--amber);
 }
 
 .auth-switch a:hover {
-  color: #75836a;
+  color: var(--amber-dark);
 }
 
 /* ---------- Smaller screens ---------- */
@@ -206,17 +227,19 @@
     grid-template-columns: 1fr;
   }
 
+  /* Phones and tablets: show only the form, like the old behaviour */
   .auth-art {
     display: none;
   }
 
   .auth-panel {
     align-items: start;
-    padding: 36px 6% 48px;
+    padding: 36px 5% 48px;
   }
+}
 
-  .auth-mobile-brand {
-    display: inline-flex;
-    justify-self: start;
+@media (max-width: 480px) {
+  .auth-form {
+    padding: 28px 22px;
   }
 }

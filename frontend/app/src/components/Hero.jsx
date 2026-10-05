@@ -1,67 +1,45 @@
+const spines = [
+  { w: 34, h: 168, color: "#7b2d26" },
+  { w: 44, h: 204, color: "#2f5d62" },
+  { w: 30, h: 146, color: "#e8a33d" },
+  { w: 46, h: 188, color: "#4a3b6b" },
+  { w: 36, h: 214, color: "#a63d40" },
+  { w: 32, h: 158, color: "#2a2623" },
+  { w: 42, h: 196, color: "#c98622" },
+  { w: 36, h: 176, color: "#3c6e8f" },
+  { w: 30, h: 208, color: "#6b3f2a" },
+];
+
 function Hero() {
   return (
     <section className="hero" id="top">
       <div className="hero-copy">
-        <span className="eyebrow">
-          <span className="eyebrow-line" />
-          YOUR NEXT CHAPTER STARTS HERE
-        </span>
-
-        <h1>
-          Stories worth
-          <br />
-          staying <em>up for.</em>
-        </h1>
+        <h1>Stories worth staying up for.</h1>
 
         <p>
-          Find your next can’t-put-it-down. Thoughtful reads, handpicked for
-          curious minds.
+          Hand-picked books for curious readers, from page-turners to quiet
+          favorites. Find your next one on the shelves below.
         </p>
 
         <a className="primary-button" href="#catalog">
-          Explore the collection <span>→</span>
+          Browse the shelves
         </a>
-
-        <div className="reader-note">
-          <span className="reader-spark">✦</span>
-          <span>
-            <b>Loved by readers</b>
-            <br />
-            A little joy in every delivery
-          </span>
-        </div>
       </div>
 
-      <div className="hero-art" aria-label="Illustration of a featured book">
-        <div className="sun-disc" />
-        <div className="plant plant-one">✳</div>
-        <div className="plant plant-two">✳</div>
-
-        <div className="book-stack">
-          <span />
-          <span />
-          <span />
+      <div className="hero-shelf" aria-hidden="true">
+        <div className="spines">
+          {spines.map((spine, index) => (
+            <span
+              key={index}
+              style={{
+                flex: spine.w,
+                height: spine.h,
+                background: spine.color,
+              }}
+            />
+          ))}
         </div>
-
-        <div className="hero-book">
-          <small>THE ART OF</small>
-          <strong>
-            BEGINNING
-            <br />
-            AGAIN
-          </strong>
-          <i>a story for the in-between</i>
-        </div>
-
-        <div className="hero-caption">
-          A good book
-          <br />
-          changes everything.
-        </div>
-      </div>
-
-      <div className="hero-index">
-        01 <span /> 04
+        <div className="board" />
       </div>
     </section>
   );

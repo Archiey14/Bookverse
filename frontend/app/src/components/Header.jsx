@@ -1,4 +1,23 @@
 import UserMenu from "./UserMenu";
+import Announcement from "./Announcement";
+
+function Icon({ children }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
 
 function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
   function go(target) {
@@ -10,9 +29,7 @@ function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
 
   return (
     <>
-      <div className="announcement">
-        Free shipping on orders over $40
-      </div>
+      <Announcement />
 
       <header className="topbar">
         <a
@@ -43,7 +60,11 @@ function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
             onClick={() => onOpenPanel("wishlist")}
             aria-label={`Open wishlist, ${wishlistCount} saved books`}
           >
-            ♡ <span className="tiny-count">{wishlistCount}</span>
+            <Icon>
+              <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" />
+            </Icon>
+            <span className="label">Wishlist</span>
+            <span className="tiny-count">{wishlistCount}</span>
           </button>
 
           <button
@@ -51,7 +72,12 @@ function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
             onClick={() => onOpenPanel("cart")}
             aria-label={`Open shopping bag, ${cartCount} books`}
           >
-            Bag <span className="tiny-count">{cartCount}</span>
+            <Icon>
+              <path d="M5 8h14l-1 12H6L5 8z" />
+              <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+            </Icon>
+            <span className="label">Bag</span>
+            <span className="tiny-count">{cartCount}</span>
           </button>
 
           <button
@@ -59,8 +85,14 @@ function Header({ cartCount, wishlistCount, onOpenPanel, onNavigate }) {
             onClick={() => onOpenPanel("orders")}
             aria-label="Open your orders"
           >
-            Orders
+            <Icon>
+              <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z" />
+              <path d="M9 8h6M9 12h6" />
+            </Icon>
+            <span className="label">Orders</span>
           </button>
+
+          <span className="header-divider" aria-hidden="true" />
 
           <UserMenu />
         </div>

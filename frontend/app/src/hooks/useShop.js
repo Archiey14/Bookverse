@@ -22,6 +22,7 @@ export function useShop(books) {
   const [orders, setOrders] = useState([]);
   const [panel, setPanel] = useState("");
   const [toast, setToast] = useState("");
+  const [toastKey, setToastKey] = useState(0);
   const toastTimer = useRef(null);
 
   useEffect(() => {
@@ -101,6 +102,7 @@ export function useShop(books) {
 
   function notify(message) {
     setToast(message);
+    setToastKey((key) => key + 1);
     window.clearTimeout(toastTimer.current);
     toastTimer.current = window.setTimeout(() => setToast(""), 2200);
   }
@@ -308,6 +310,7 @@ export function useShop(books) {
     panel,
     setPanel,
     toast,
+    toastKey,
     notify,
     cartCount,
     cartTotal,

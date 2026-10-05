@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import PageLayout from "../components/PageLayout";
+import "./AdminDashboard.css";
 
 function readUser() {
   try {
@@ -56,59 +58,71 @@ function AdminDashboard() {
       maximumFractionDigits: 2,
     }).format((Number(paise) || 0) / 100);
 
-  const cardStyle = {
-    background: "#fff",
-    border: "1px solid #e5e1dc",
-    borderRadius: "12px",
-    padding: "20px",
-  };
+  const stats = data
+    ? [
+        ["Books", data.bookCount],
+        ["Users", data.userCount],
+        ["Orders", data.orderCount],
+        ["Paid orders", data.paidOrderCount],
+        ["Paid revenue", money(data.totalRevenuePaise)],
+      ]
+    : [];
 
   return (
-    <main style={{ maxWidth: "1000px", margin: "0 auto", padding: "32px 20px" }}>
-      <p><Link to="/">← Back to Bookverse</Link></p>
-      <h1>Admin dashboard</h1>
+    <PageLayout>
+      <section className="admin-page">
+        <Link className="page-back" to="/">
+          ← Back to Bookverse
+        </Link>
 
-      {!token || user?.role !== "admin" ? (
-        <p role="alert">Admin access required. Sign in with an admin account.</p>
-      ) : loading ? (
-        <p>Loading dashboard…</p>
-      ) : error ? (
-        <p role="alert">{error}</p>
-      ) : data ? (
-        <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "16px",
-              margin: "24px 0",
-            }}
-          >
-            <div style={cardStyle}><b>Books</b><p>{data.bookCount}</p></div>
-            <div style={cardStyle}><b>Users</b><p>{data.userCount}</p></div>
-            <div style={cardStyle}><b>Orders</b><p>{data.orderCount}</p></div>
-            <div style={cardStyle}><b>Paid orders</b><p>{data.paidOrderCount}</p></div>
-            <div style={cardStyle}><b>Paid revenue</b><p>{money(data.totalRevenuePaise)}</p></div>
-          </div>
+        <span className="eyebrow">
+          <span className="eyebrow-line" />
+          BEHIND THE SHELVES
+        </span>
+        <h1>
+          Admin <em>dashboard.</em>
+        </h1>
 
-          <section style={cardStyle}>
-            <h2>Low stock</h2>
-            {data.lowStockBooks.length === 0 ? (
-              <p>No books are low on stock.</p>
-            ) : (
-              <ul>
-                {data.lowStockBooks.map((book) => (
-                  <li key={book.id}>
-                    {book.title}: {book.stock} left
-                    (alert at {book.lowStockThreshold})
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        </>
-      ) : null}
-    </main>
+        {!token || user?.role !== "admin" ? (
+          <p className="admin-message" role="alert">
+            Admin access required. Sign in with an admin account.
+          </p>
+        ) : loading ? (
+          <p className="admin-message">Loading dashboard…</p>
+        ) : error ? (
+          <p className="admin-message" role="alert">
+            {error}
+          </p>
+        ) : data ? (
+          <>
+            <div className="admin-stats">
+              {stats.map(([label, value]) => (
+                <div className="admin-card admin-stat" key={label}>
+                  <span>{label}</span>
+                  <b>{value}</b>
+                </div>
+              ))}
+            </div>
+
+            <section className="admin-card">
+              <h2>Low stock</h2>
+              {data.lowStockBooks.length === 0 ? (
+                <p>No books are low on stock.</p>
+              ) : (
+                <ul>
+                  {data.lowStockBooks.map((book) => (
+                    <li key={book.id}>
+                      {book.title}: {book.stock} left (alert at{" "}
+                      {book.lowStockThreshold})
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </>
+        ) : null}
+      </section>
+    </PageLayout>
   );
 }
 

@@ -1,21 +1,19 @@
-/* Reader reviews on the book page. Uses the same reading-room theme as the
-   rest of the site (colours come from the variables in App.css). */
+/* Reader reviews on the book page. Uses the tokens from App.css. */
 
 .reviews-layout {
   display: grid;
   grid-template-columns: minmax(280px, 380px) 1fr;
-  gap: 56px;
   align-items: start;
+  gap: 56px;
 }
 
 /* ---------- Form card ---------- */
 
 .reviews-form-card {
   padding: 26px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
-  box-shadow: 0 6px 0 var(--board-edge), 0 18px 40px #3b230022;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
 }
 
 .reviews-form-card form {
@@ -23,26 +21,23 @@
   gap: 18px;
 }
 
-.reviews-form-card h3 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 24px;
-  letter-spacing: -0.03em;
+.reviews-form-card h3,
+.reviews-signin h3 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .reviews-field {
   display: grid;
   gap: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--ink);
 }
 
 .reviews-field small {
+  color: var(--text-3);
   font-weight: 400;
-  color: var(--muted);
 }
 
 .reviews-picker {
@@ -54,11 +49,12 @@
   padding: 0 2px;
   border: 0;
   background: transparent;
-  color: #d6bf98;
-  cursor: pointer;
+  color: var(--border-strong);
   font-size: 30px;
   line-height: 1;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .reviews-picker button:hover {
@@ -66,29 +62,29 @@
 }
 
 .reviews-picker button.on {
-  color: var(--amber-dark);
+  color: var(--accent);
 }
 
 .reviews-field textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #c9ab7c;
-  border-radius: 6px;
-  background: #fffaf0;
-  color: var(--ink);
-  font: inherit;
-  font-size: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  font-size: 15px;
   font-weight: 400;
   line-height: 1.6;
   resize: vertical;
 }
 
 .reviews-field textarea::placeholder {
-  color: #a68e69;
+  color: var(--text-3);
 }
 
 .reviews-field textarea:focus {
-  border-color: var(--board-edge);
+  border-color: var(--text);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(23, 23, 23, 0.08);
 }
 
 .reviews-count {
@@ -97,22 +93,22 @@
 
 .reviews-error,
 .reviews-notice {
-  padding: 11px 13px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
   line-height: 1.5;
 }
 
 .reviews-error {
-  border: 1px solid #e3b9ae;
-  background: #f8e4dc;
-  color: #8a2f25;
+  border: 1px solid #f3c4bd;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .reviews-notice {
-  border: 1px solid #dccd8a;
-  background: #f3ecc8;
-  color: #5a4a12;
+  border: 1px solid #f0dfae;
+  background: var(--accent-soft);
+  color: #6b4308;
 }
 
 .reviews-actions {
@@ -128,23 +124,13 @@
 
 .reviews-signin {
   display: grid;
-  gap: 14px;
   justify-items: start;
-}
-
-.reviews-signin h3 {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--serif);
-  font-weight: 800;
-  font-size: 24px;
-  letter-spacing: -0.03em;
+  gap: 14px;
 }
 
 .reviews-signin p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
+  color: var(--text-2);
+  font-size: 15px;
   line-height: 1.6;
 }
 
@@ -152,19 +138,17 @@
 
 .reviews-list {
   display: grid;
-  gap: 0;
 }
 
 .reviews-empty {
-  margin: 0;
-  padding: 26px 0;
-  color: var(--muted);
-  font-size: 14px;
+  padding: 8px 0 26px;
+  color: var(--text-2);
+  font-size: 15px;
 }
 
 .reviews-item {
   padding: 22px 0;
-  border-bottom: 1px solid #c9ab7c;
+  border-bottom: 1px solid var(--border);
 }
 
 .reviews-item:first-child {
@@ -173,8 +157,8 @@
 
 .reviews-item header {
   display: flex;
-  justify-content: space-between;
   align-items: baseline;
+  justify-content: space-between;
   gap: 16px;
 }
 
@@ -186,42 +170,41 @@
 }
 
 .reviews-item header b {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .reviews-item time {
-  color: var(--muted);
-  font-size: 12px;
+  color: var(--text-3);
+  font-size: 13px;
   white-space: nowrap;
 }
 
 .reviews-item p {
-  margin: 10px 0 0;
-  color: #4f3a22;
-  font-size: 14px;
+  margin-top: 10px;
+  color: var(--text-2);
+  font-size: 15px;
   line-height: 1.75;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 
 .reviews-stars {
-  color: var(--amber-dark);
-  font-size: 14px;
+  color: var(--accent);
+  font-size: 15px;
   letter-spacing: 1px;
 }
 
 .reviews-stars span {
-  color: #d6bf98;
+  color: var(--border-strong);
 }
 
 .reviews-you {
   padding: 2px 8px;
   border-radius: 999px;
-  background: var(--amber);
-  color: var(--on-amber);
-  font-size: 10px;
+  background: var(--accent-soft);
+  color: #6b4308;
+  font-size: 11px;
   font-style: normal;
   font-weight: 700;
 }

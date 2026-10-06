@@ -71,11 +71,6 @@ function BookPage() {
     };
   }, [book]);
 
-  function goHome(target) {
-    if (target === "top") navigate("/");
-    else navigate("/", { state: { goTo: target } });
-  }
-
   async function share() {
     const url = window.location.href;
 
@@ -111,12 +106,12 @@ function BookPage() {
     : [];
 
   return (
-    <div className="app-shell">
+    <div className="app-shell sf-shell">
       <Header
+        books={books}
         cartCount={cartCount}
         wishlistCount={wishlist.length}
         onOpenPanel={setPanel}
-        onNavigate={goHome}
       />
 
       <main>
@@ -266,7 +261,13 @@ function BookPage() {
           </section>
         )}
 
-        <Footer onNotify={notify} />
+        <Footer
+          onNotify={notify}
+          onOpenPanel={setPanel}
+          categories={[
+            ...new Set(books.map((item) => item.category).filter(Boolean)),
+          ].sort()}
+        />
       </main>
 
       <SidePanel

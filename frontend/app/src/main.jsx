@@ -7,12 +7,15 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import BookPage from './pages/BookPage.jsx'
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+// Imported last so the storefront theme sits on top of App.css
+import './storefront.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/books" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/book/:id" element={<BookPage />} />

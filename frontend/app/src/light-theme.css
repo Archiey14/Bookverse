@@ -1,0 +1,366 @@
+/* ===== BookVerse light theme =====
+   Clean, light and professional. This file is imported LAST in main.jsx, so
+   it overrides the older "reading room" (wood, charcoal, amber) styling in
+   App.css, Auth.css, AdminDashboard.css and Reviews.css without touching them.
+   To go back to the old look, remove the import line from main.jsx.
+
+   Palette
+     white      #ffffff   main background, cards, forms
+     off-white  #f7f5f1   alternating sections
+     text       #1c1c1c   headings, body #3f3f3b, muted #6b6b66
+     border     #e7e5df   dividers, #d6d3cb for inputs
+     accent     amber     buttons and highlights only
+*/
+
+:root {
+  --ink: #1c1c1c;
+  --body: #3f3f3b;
+  --muted: #6b6b66;
+  --paper: #ffffff;
+  --wall: #f7f5f1;
+  --wall-deep: #f0ede6;
+  --line: #e7e5df;
+  --line-strong: #d6d3cb;
+  --board: #cfcbc2;
+  --board-edge: #5a574f;
+  --char: #1c1c1c;
+  --cream-text: #ffffff;
+  --shadow: 0 1px 2px rgba(20, 20, 20, 0.04), 0 10px 28px rgba(20, 20, 20, 0.07);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* ---------- Flat backgrounds: no wood-panel stripes ---------- */
+
+.catalog-section,
+.book-page,
+.auth-panel {
+  background-color: var(--paper);
+  background-image: none;
+}
+
+.admin-page {
+  background-color: var(--wall);
+  background-image: none;
+}
+
+/* ---------- Announcement bar ---------- */
+
+.announcement {
+  background: #fff4de;
+  color: #7a4e0e;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ---------- Navbar: white with a thin border ---------- */
+
+.topbar {
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand,
+.site-footer .brand {
+  color: var(--ink);
+}
+
+.brand-light {
+  color: var(--amber-dark);
+}
+
+.main-nav,
+.topbar .text-action,
+.topbar .icon-button {
+  color: var(--ink);
+}
+
+.main-nav a:hover,
+.header-actions .icon-button:hover {
+  background: rgba(20, 20, 20, 0.05);
+  color: var(--ink);
+}
+
+.topbar .text-action:hover {
+  color: var(--amber-dark);
+}
+
+.topbar :focus-visible {
+  outline-color: var(--ink);
+}
+
+.header-divider {
+  background: var(--line-strong);
+}
+
+.user-greeting {
+  color: var(--ink);
+}
+
+.user-greeting b {
+  color: var(--amber-dark);
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  background: var(--wall);
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1 {
+  color: var(--ink);
+}
+
+.hero-copy > p {
+  color: var(--muted);
+}
+
+.hero-shelf .board {
+  height: 12px;
+  background: var(--board);
+  box-shadow: none;
+}
+
+/* ---------- Book cards: no shelf boards, soft rounded covers ---------- */
+
+.cover-wrap::after {
+  display: none;
+}
+
+.cover-wrap,
+.cover-0,
+.cover-1,
+.cover-2,
+.cover-3,
+.cover-4 {
+  background: var(--wall-deep);
+}
+
+.cover-wrap {
+  margin-bottom: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.book-card:hover .cover-wrap {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.book-grid {
+  gap: 40px 22px;
+}
+
+/* ---------- Text colours that were hard-coded browns ---------- */
+
+.category {
+  color: var(--body);
+}
+
+.category:hover {
+  border-color: var(--line-strong);
+}
+
+.about-copy p,
+.book-page-copy > p:not(.author, .rating),
+.detail-copy > p:not(.author, .rating),
+.newsletter-card p,
+.admin-card p,
+.admin-card ul,
+.auth-art-copy p,
+.reviews-item p {
+  color: var(--body);
+}
+
+/* ---------- Borders and inputs ---------- */
+
+.sort-control select,
+.search-box {
+  border-color: var(--line-strong);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.catalog-tools,
+.panel-heading,
+.book-page-facts {
+  border-color: var(--line);
+}
+
+.tag-list li {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+
+.panel-item,
+.order-row,
+.checkout {
+  border-color: var(--line);
+}
+
+.quantity button {
+  border-color: var(--line-strong);
+}
+
+.account-form input,
+.auth-form input,
+.reviews-field textarea {
+  border-color: var(--line-strong);
+  background: #ffffff;
+}
+
+.auth-form input:focus,
+.reviews-field textarea:focus {
+  border-color: var(--ink);
+}
+
+.auth-form input::placeholder,
+.reviews-field textarea::placeholder,
+.newsletter input::placeholder {
+  color: #9a9a94;
+}
+
+.catalog-bottom button {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.catalog-bottom button:hover {
+  background: var(--wall);
+}
+
+/* ---------- Cards and pop-ups: soft shadow instead of a wooden edge ---------- */
+
+.detail-modal,
+.newsletter-card,
+.admin-card,
+.auth-form,
+.reviews-form-card {
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.newsletter-card {
+  background: var(--wall);
+  box-shadow: none;
+}
+
+.overlay {
+  background: rgba(20, 20, 20, 0.45);
+}
+
+/* ---------- Sections below the catalog ---------- */
+
+.about-section {
+  background: var(--wall);
+}
+
+.benefit-strip {
+  background: var(--wall);
+}
+
+.benefit-strip > .benefit > .benefit-icon {
+  border-color: var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.newsletter {
+  background: var(--paper);
+}
+
+.newsletter form {
+  border-color: var(--line-strong);
+  background: var(--paper);
+}
+
+.quote-banner {
+  background: var(--wall-deep);
+  color: var(--ink);
+}
+
+.quote-banner p {
+  color: var(--ink);
+}
+
+.quote-banner .quote-credit {
+  color: var(--muted);
+}
+
+.quote-mark {
+  color: var(--amber-dark);
+}
+
+.site-footer {
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+
+/* ---------- Login / register ---------- */
+
+.auth-art {
+  background: var(--wall);
+}
+
+.auth-submit:disabled {
+  background: #c9c8c2;
+  color: #ffffff;
+}
+
+/* ---------- Reviews ---------- */
+
+.reviews-picker button {
+  color: var(--line-strong);
+}
+
+.reviews-picker button.on {
+  color: var(--amber-dark);
+}
+
+.reviews-item {
+  border-bottom-color: var(--line);
+}
+
+.reviews-stars span {
+  color: var(--line-strong);
+}
+
+/* ---------- Plain text hero (no bookshelf art) ---------- */
+
+.hero {
+  min-height: 0;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  align-items: center;
+  padding: 96px 8% 104px;
+  text-align: center;
+}
+
+.hero-copy {
+  max-width: 680px;
+  padding-bottom: 0;
+}
+
+.hero-copy > p {
+  max-width: 520px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Login / register: left panel is just the welcome text, centred */
+.auth-art {
+  justify-content: center;
+  padding: 64px 0;
+}
+
+@media (max-width: 620px) {
+  .hero {
+    padding: 64px 6% 72px;
+  }
+}

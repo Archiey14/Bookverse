@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Auth.css";
 import PageLayout from "../components/PageLayout";
-import ShelfArt from "../components/ShelfArt";
 import GoogleSignInButton from "../components/GoogleSignInButton";
 
 function Login() {
@@ -76,8 +75,6 @@ function Login() {
               all in one cozy place.
             </p>
           </div>
-
-          <ShelfArt />
         </aside>
 
         <section className="auth-panel">

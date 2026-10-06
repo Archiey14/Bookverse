@@ -61,7 +61,7 @@ function PageLayout({ mode, children }) {
             </span>
           </Link>
           <span>Made for the love of a good story.</span>
-          <span>©Shnoor 2025 Bookverse</span>
+          <span>© Shnoor {new Date().getFullYear()} Bookverse</span>
         </footer>
       )}
     </div>

@@ -1,20 +1,13 @@
-/* The "Hi, name" greeting sits on the charcoal navbar, so it uses the
-   cream/amber navbar colours from the theme in App.css. */
+/* The "Hi, name" greeting in the navbar. */
 
 .user-greeting {
   margin-right: 8px;
-  color: var(--cream-text);
+  color: var(--text-2);
   font-size: 14px;
   white-space: nowrap;
 }
 
 .user-greeting b {
-  color: var(--amber);
-  font-weight: 700;
-}
-
-@media (max-width: 620px) {
-  .user-greeting {
-    display: none;
-  }
+  color: var(--text);
+  font-weight: 600;
 }

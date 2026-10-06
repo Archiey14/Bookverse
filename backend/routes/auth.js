@@ -1,9 +1,33 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import { initializeApp, getApps, cert } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { read, update } from "../db.js";
 import { JWT_SECRET } from "../config.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const serviceAccountPath = path.join(__dirname, "../firebase-service-account.json");
+
+let firebaseAuth = null;
+if (fs.existsSync(serviceAccountPath)) {
+  try {
+    const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf-8"));
+    if (!getApps().length) {
+      initializeApp({
+        credential: cert(serviceAccount),
+      });
+      console.log("Firebase Admin initialized successfully.");
+    }
+    firebaseAuth = getAuth();
+  } catch (err) {
+    console.error("Failed to initialize Firebase Admin:", err.message);
+  }
+}
 
 const router = Router();
 const googleClient = new OAuth2Client();
@@ -162,6 +186,78 @@ router.post("/google", async (req, res) => {
   return res.json({
     token,
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
+  });
+});
+
+router.post("/firebase-google", async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({ message: "Firebase ID token is required." });
+  }
+
+  if (!firebaseAuth) {
+    return res.status(503).json({
+      message: "Firebase Admin is not configured on the server.",
+    });
+  }
+
+  let decodedToken;
+  try {
+    decodedToken = await firebaseAuth.verifyIdToken(idToken);
+  } catch (error) {
+    console.error("Firebase ID token verification failed:", error.message);
+    return res.status(401).json({ message: "Google sign-in could not be verified." });
+  }
+
+  const { uid, email, name, picture } = decodedToken;
+  if (!email) {
+    return res.status(400).json({
+      message: "Google account must provide an email address.",
+    });
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const result = await update("users", (users) => {
+    let user = users.find(
+      (entry) => String(entry.email).toLowerCase() === normalizedEmail,
+    );
+
+    if (user) {
+      user.firebaseUid = uid;
+      if (!user.name && name) user.name = name;
+      if (picture && !user.avatar) user.avatar = picture;
+    } else {
+      user = {
+        id: Date.now(),
+        name: name || normalizedEmail.split("@")[0],
+        email: normalizedEmail,
+        firebaseUid: uid,
+        avatar: picture || null,
+        role: "user",
+      };
+      users.push(user);
+    }
+
+    return { user };
+  });
+
+  const user = result.user;
+  const token = jwt.sign(
+    { id: user.id, role: user.role },
+    JWT_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  return res.json({
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+    },
   });
 });
 

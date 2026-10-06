@@ -4,3 +4,4 @@ data/users.json
 data/orders.json
 data/reviews.json
 .env
+firebase-service-account.json

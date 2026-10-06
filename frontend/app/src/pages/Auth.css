@@ -220,6 +220,46 @@ body.login-no-scroll {
   display: flex;
   justify-content: center;
   min-height: 40px;
+  width: 100%;
+}
+
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  height: 44px;
+  padding: 0 16px;
+  background: #ffffff;
+  color: #3c4043;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.google-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #c6c9ce;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.15);
+}
+
+.google-btn:active:not(:disabled) {
+  background: #f1f3f4;
+}
+
+.google-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  flex-shrink: 0;
 }
 
 .google-setup-note {

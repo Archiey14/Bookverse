@@ -68,12 +68,12 @@ function Login() {
   }
 
   const handleGoogleCredential = useCallback(
-    async (credential) => {
+    async (idToken) => {
       setError("");
       setLoading(true);
 
       try {
-        const { data } = await axios.post("/api/auth/google", { credential });
+        const { data } = await axios.post("/api/auth/firebase-google", { idToken });
         login(data.token, data.user);
         navigate(from);
       } catch (err) {

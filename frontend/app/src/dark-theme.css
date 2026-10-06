@@ -1452,3 +1452,15 @@ html.dark-theme {
 [data-theme="dark"] .empty-results {
   color: #e6edf7;
 }
+
+[data-theme="dark"] .google-btn {
+  background: #141c28;
+  color: #e6edf7;
+  border-color: #2b394e;
+}
+
+[data-theme="dark"] .google-btn:hover:not(:disabled) {
+  background: #1b2637;
+  border-color: #3b4d69;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}

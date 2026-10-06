@@ -1,161 +1,116 @@
-import { useEffect, useMemo, useState } from "react";
-import { compareNewest, compareRating } from "../utils/collections";
+import { useMemo } from "react";
+import { compareRating } from "../utils/collections";
 import BookCover from "./BookCover";
-import Chevron from "./Chevron";
+import { HeartIcon, SearchIcon } from "./Icons";
 
-// The big rotating banner. Each slide promotes one collection and shows
-// three covers picked from your catalog. Slides advance every 6 seconds,
-// pause on hover/focus, and do not auto-play for people who prefer reduced
-// motion.
-const SLIDES = [
-  {
-    id: "bestsellers",
-    theme: "banner-amber",
-    eyebrow: "Bestsellers",
-    title: "The books everyone is talking about",
-    text: "Our most-loved titles, chosen by thousands of readers.",
-    cta: "Shop bestsellers",
-    target: "bestsellers",
-  },
-  {
-    id: "new",
-    theme: "banner-sage",
-    eyebrow: "New arrivals",
-    title: "Fresh on the shelves this month",
-    text: "The latest additions to the BookVerse collection.",
-    cta: "See new arrivals",
-    target: "new",
-  },
-  {
-    id: "toprated",
-    theme: "banner-sky",
-    eyebrow: "Top rated",
-    title: "Reader favorites, rated the highest",
-    text: "Start with the books readers rate best of all.",
-    cta: "See top rated",
-    target: "toprated",
-  },
-];
+// A focused storefront landing hero: explain what Bookverse offers, then
+// give readers a clear path into the real catalog and featured books.
+function Hero({ books = [], onNavigate, onSelectBook }) {
+  const picks = useMemo(
+    () =>
+      [...books]
+        .sort(
+          (a, b) =>
+            Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+            compareRating(a, b),
+        )
+        .slice(0, 3),
+    [books],
+  );
 
-function Hero({ books = [], onNavigate }) {
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  const slides = useMemo(() => {
-    const picks = {
-      bestsellers: books
-        .filter((book) => book.bestseller)
-        .sort((a, b) => (b.reviews || 0) - (a.reviews || 0)),
-      new: [...books].sort(compareNewest),
-      toprated: [...books].sort(compareRating),
-    };
-
-    return SLIDES.map((slide) => ({
-      ...slide,
-      books: (picks[slide.id] ?? []).slice(0, 3),
-    }));
-  }, [books]);
-
-  useEffect(() => {
-    if (paused) return undefined;
-
-    const reduceMotion = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (reduceMotion) return undefined;
-
-    const timer = window.setInterval(
-      () => setIndex((current) => (current + 1) % SLIDES.length),
-      6000,
-    );
-
-    return () => window.clearInterval(timer);
-  }, [paused, index]);
-
-  function step(direction) {
-    setIndex((current) => (current + direction + SLIDES.length) % SLIDES.length);
-  }
+  const featured = picks[1] ?? picks[0];
 
   return (
-    <section
-      className="banner-section"
-      id="top"
-      aria-roledescription="carousel"
-      aria-label="Featured collections"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <h1 className="sr-only">BookVerse online bookstore</h1>
+    <section className="landing-hero" id="top" aria-labelledby="landing-title">
+      <div className="landing-hero-inner">
+        <div className="landing-hero-copy">
+          <span className="landing-eyebrow">
+            <span aria-hidden="true" /> A BOOKSHOP FOR CURIOUS READERS
+          </span>
 
-      <div className="banner">
-        <div
-          className="banner-track"
-          style={{ transform: `translateX(-${index * 100}%)` }}
-        >
-          {slides.map((slide, slideIndex) => (
-            <div
-              key={slide.id}
-              className={`banner-slide ${slide.theme}`}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`${slideIndex + 1} of ${slides.length}`}
-              aria-hidden={slideIndex !== index}
-              inert={slideIndex !== index}
-            >
-              <div className="banner-copy">
-                <span className="eyebrow">{slide.eyebrow}</span>
-                <h2>{slide.title}</h2>
-                <p>{slide.text}</p>
-                <button
-                  type="button"
-                  className="primary-button"
-                  onClick={() => onNavigate(slide.target)}
-                >
-                  {slide.cta} <span aria-hidden="true">→</span>
-                </button>
-              </div>
+          <h1 id="landing-title">
+            Find a book that feels like <em>yours.</em>
+          </h1>
 
-              <div className="banner-covers" aria-hidden="true">
-                {slide.books.map((book) => (
-                  <span className="banner-cover" key={book.id}>
-                    <BookCover book={book} size="L" decorative className="book3d" />
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+          <p className="landing-description">
+            Discover thoughtful picks, reader favorites, and stories for every
+            kind of day. Your next great read is waiting on the shelf.
+          </p>
 
-        <button
-          type="button"
-          className="banner-arrow banner-arrow-prev"
-          onClick={() => step(-1)}
-          aria-label="Previous slide"
-        >
-          <Chevron direction="left" />
-        </button>
-        <button
-          type="button"
-          className="banner-arrow banner-arrow-next"
-          onClick={() => step(1)}
-          aria-label="Next slide"
-        >
-          <Chevron direction="right" />
-        </button>
-
-        <div className="banner-dots">
-          {slides.map((slide, slideIndex) => (
+          <div className="landing-actions">
             <button
               type="button"
-              key={slide.id}
-              className={slideIndex === index ? "active" : ""}
-              onClick={() => setIndex(slideIndex)}
-              aria-label={`Go to slide ${slideIndex + 1}`}
-              aria-current={slideIndex === index}
-            />
-          ))}
+              className="landing-primary"
+              onClick={() => onNavigate("all")}
+            >
+              Explore the shelves <span aria-hidden="true">→</span>
+            </button>
+            <button
+              type="button"
+              className="landing-secondary"
+              onClick={() => onNavigate("bestsellers")}
+            >
+              See reader favorites
+            </button>
+          </div>
+
+          <div className="landing-highlights" aria-label="Bookverse features">
+            <div>
+              <span className="landing-highlight-icon" aria-hidden="true"><SearchIcon size={18} /></span>
+              <span>
+                <b>Find your kind of story</b>
+                <small>Browse by topic, author, or category.</small>
+              </span>
+            </div>
+            <div>
+              <span className="landing-highlight-icon" aria-hidden="true"><HeartIcon size={18} /></span>
+              <span>
+                <b>Keep good reads close</b>
+                <small>Save favorites to your personal wishlist.</small>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="landing-hero-art" role="group" aria-label="Featured books from Bookverse">
+          <div className="landing-art-glow" aria-hidden="true" />
+          <div className="landing-book-stack">
+            {picks.map((book, index) => (
+              <button
+                type="button"
+                className={`landing-book landing-book-${index + 1}`}
+                key={book.id}
+                onClick={() => onSelectBook?.(book)}
+                aria-label={`View ${book.title} by ${book.author}`}
+              >
+                <BookCover book={book} size="L" priority={index === 1} decorative />
+              </button>
+            ))}
+            {picks.length === 0 && (
+              <div className="landing-empty-books" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            )}
+          </div>
+
+          {featured && (
+            <button
+              type="button"
+              className="landing-feature-card"
+              onClick={() => onSelectBook?.(featured)}
+              aria-label={`Quick view: ${featured.title} by ${featured.author}`}
+            >
+              <span className="landing-feature-label">A GOOD PLACE TO START</span>
+              <b>{featured.title}</b>
+              <small>by {featured.author}</small>
+              <span className="landing-feature-rating">
+                <span aria-hidden="true">★</span> {featured.rating || "Reader favorite"}
+                {featured.reviews > 0 && ` · ${featured.reviews.toLocaleString()} reviews`}
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </section>

@@ -1,0 +1,71 @@
+/* =====================================================================
+   ThemeToggle Button Styles
+   Subtle, tactile toggle for light and dark theme switching
+   ===================================================================== */
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong, #d3d0c9);
+  background: var(--surface, #f7f6f3);
+  color: var(--text, #171717);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--surface-2, #efede8);
+  border-color: var(--text-3, #75757d);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.96);
+}
+
+.theme-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  color: inherit;
+  transition: transform 0.25s ease;
+}
+
+.theme-toggle-btn:hover .theme-toggle-icon {
+  transform: rotate(15deg);
+}
+
+.theme-toggle-btn.is-dark {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f1f5f9;
+}
+
+.theme-toggle-btn.is-dark:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.theme-toggle-text {
+  font-size: 12.5px;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    width: 36px;
+    padding: 0;
+  }
+  .theme-toggle-text {
+    display: none;
+  }
+}

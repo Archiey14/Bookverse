@@ -1,14 +1,43 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Auth.css";
 import PageLayout from "../components/PageLayout";
 import GoogleSignInButton from "../components/GoogleSignInButton";
+import { useScrollLock } from "../hooks/useScrollLock";
+import { useAuth } from "../hooks/useAuth";
 
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  // Pages like /book/:id send people here and expect them to come back
+  const { login } = useAuth();
+
+  // Strictly prevent window/page scrolling while on the login page
+  useScrollLock(true);
+
+  // Additional defense: prevent touchmove/wheel on window if needed
+  useEffect(() => {
+    document.body.classList.add("login-no-scroll");
+    document.documentElement.classList.add("login-no-scroll");
+
+    const preventDefaultScroll = (e) => {
+      // Allow internal scrolling inside the auth form if the screen is tiny, but prevent window scroll
+      if (!e.target.closest(".auth-panel")) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("wheel", preventDefaultScroll, { passive: false });
+    window.addEventListener("touchmove", preventDefaultScroll, { passive: false });
+
+    return () => {
+      document.body.classList.remove("login-no-scroll");
+      document.documentElement.classList.remove("login-no-scroll");
+      window.removeEventListener("wheel", preventDefaultScroll);
+      window.removeEventListener("touchmove", preventDefaultScroll);
+    };
+  }, []);
+
   const from = location.state?.from || "/";
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +55,7 @@ function Login() {
 
     try {
       const { data } = await axios.post("/api/auth/login", form);
-      localStorage.setItem("bookverse-token", data.token);
-      localStorage.setItem("bookverse-user", JSON.stringify(data.user));
+      login(data.token, data.user);
       navigate(from);
     } catch (err) {
       setError(
@@ -39,28 +67,30 @@ function Login() {
     }
   }
 
-  const handleGoogleCredential = useCallback(async (credential) => {
-    setError("");
-    setLoading(true);
+  const handleGoogleCredential = useCallback(
+    async (credential) => {
+      setError("");
+      setLoading(true);
 
-    try {
-      const { data } = await axios.post("/api/auth/google", { credential });
-      localStorage.setItem("bookverse-token", data.token);
-      localStorage.setItem("bookverse-user", JSON.stringify(data.user));
-      window.dispatchEvent(new Event("bookverse-auth-change"));
-      navigate(from);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Google sign-in failed. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [from, navigate]);
+      try {
+        const { data } = await axios.post("/api/auth/google", { credential });
+        login(data.token, data.user);
+        navigate(from);
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            "Google sign-in failed. Please try again.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [from, login, navigate],
+  );
 
   return (
     <PageLayout mode="login">
-      <div className="auth-page">
+      <div className="auth-page auth-page-login">
         <aside className="auth-art">
           <div className="auth-art-copy">
             <span className="eyebrow">
@@ -71,8 +101,8 @@ function Login() {
               Your next chapter <em>awaits.</em>
             </h1>
             <p>
-              Sign in to keep your wishlist, your bag and your orders together,
-              all in one cozy place.
+              Sign in to unlock full bookstore features: your personal wishlist,
+              bag, personalized recommendations, and orders together.
             </p>
           </div>
         </aside>
@@ -88,7 +118,7 @@ function Login() {
                 Welcome <em>back.</em>
               </h2>
               <p className="auth-sub">
-                Sign in with your email and password to continue.
+                Sign in with your email and password to access all features.
               </p>
             </div>
 
@@ -137,10 +167,12 @@ function Login() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Signing in..." : "Sign in"} <span>→</span>
+              {loading ? "Signing in..." : "Sign in to Unlock Features"} <span>→</span>
             </button>
 
-            <div className="auth-divider"><span>or continue with</span></div>
+            <div className="auth-divider">
+              <span>or continue with</span>
+            </div>
             <GoogleSignInButton
               onCredential={handleGoogleCredential}
               onError={setError}

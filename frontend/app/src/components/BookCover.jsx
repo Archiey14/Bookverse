@@ -19,15 +19,17 @@ const TONES = [
 // If the image is missing, blocked or just a 1px placeholder, a designed
 // fallback cover with the title and author is drawn instead of a blank box.
 function BookCover({
-  book,
+  book = {},
   size = "L",
   decorative = false,
   priority = false,
   className = "",
 }) {
-  const src = book.isbn
-    ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-${size}.jpg?default=false`
-    : "";
+  const src =
+    book.cover ||
+    (book.isbn
+      ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-${size}.jpg`
+      : "");
   const [failedSrc, setFailedSrc] = useState("");
   const failed = !src || failedSrc === src;
   const [from, to] = TONES[(Number(book.id) || 0) % TONES.length];

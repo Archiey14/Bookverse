@@ -8,6 +8,7 @@ import {
 import UserMenu from "./UserMenu";
 import Announcement from "./Announcement";
 import BookCover from "./BookCover";
+import ThemeToggle from "./ThemeToggle";
 import {
   BagIcon,
   ChevronDownIcon,
@@ -350,6 +351,10 @@ function Header({ books = [], cartCount = 0, wishlistCount = 0, onOpenPanel }) {
               </span>
               <span className="sf-action-label">Bag</span>
             </button>
+
+            <span className="sf-divider" aria-hidden="true" />
+
+            <ThemeToggle />
           </div>
         </div>
 

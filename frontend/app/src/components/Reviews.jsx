@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../hooks/useAuth";
 import "./Reviews.css";
-
-function readUser() {
-  try {
-    return JSON.parse(localStorage.getItem("bookverse-user"));
-  } catch {
-    return null;
-  }
-}
 
 function Stars({ value }) {
   return (
@@ -36,8 +29,8 @@ function formatDate(iso) {
 // delete your own review. `onChanged` runs after a change so the page can
 // refresh the book's star average.
 function Reviews({ bookId, onChanged }) {
-  const token = localStorage.getItem("bookverse-token");
-  const signedIn = Boolean(token && readUser());
+  const { token, isLoggedIn } = useAuth();
+  const signedIn = isLoggedIn;
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -243,13 +236,13 @@ function Reviews({ bookId, onChanged }) {
           ) : (
             <div className="reviews-signin">
               <h3>Share your thoughts</h3>
-              <p>Sign in to rate this book and write a review.</p>
+              <p>Sign in to unlock reader reviews and post your feedback.</p>
               <Link
                 className="primary-button"
                 to="/login"
                 state={{ from: `/book/${bookId}` }}
               >
-                Sign in <span>→</span>
+                Sign in to review <span>→</span>
               </Link>
             </div>
           )}

@@ -1486,6 +1486,27 @@ button.sign-in:hover {
   font-size: 15px;
 }
 
+.site-footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.site-footer-links a {
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-footer-links a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.site-footer-links span {
+  color: var(--border-strong);
+}
+
 /* ---------- 11. Motion ---------- */
 
 .overlay {
@@ -1780,3 +1801,123 @@ button.sign-in:hover {
     flex-direction: column;
   }
 }
+
+/* ---------- 12. Guest Notice Banner & Auth Gating Layout ---------- */
+
+.guest-feature-notice {
+  background-color: #fbf7ee;
+  border-bottom: 1px solid #ebdcc5;
+  padding: 10px 24px;
+}
+
+.guest-feature-notice-inner {
+  max-width: 1260px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.guest-notice-badge {
+  display: inline-block;
+  background-color: var(--accent, #f26b1d);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.guest-notice-text {
+  font-size: 13.5px;
+  color: #574836;
+  flex: 1;
+  min-width: 260px;
+}
+
+.guest-notice-text b {
+  color: var(--text, #171717);
+}
+
+.guest-notice-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guest-notice-link-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.guest-notice-primary {
+  background-color: var(--text, #171717);
+  color: #fff !important;
+}
+
+.guest-notice-primary:hover {
+  background-color: #333333;
+}
+
+.guest-notice-secondary {
+  border: 1px solid #c9bda9;
+  background-color: #fff;
+  color: #3f392f !important;
+}
+
+.guest-notice-secondary:hover {
+  background-color: #f5eedf;
+}
+
+.panel-guest-auth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 48px 24px;
+  gap: 14px;
+}
+
+.panel-guest-icon {
+  font-size: 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--surface, #f7f6f3);
+  border: 1px solid var(--border, #e7e5e0);
+  display: grid;
+  place-items: center;
+}
+
+.panel-guest-auth h3 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text, #171717);
+}
+
+.panel-guest-auth p {
+  font-size: 14px;
+  color: var(--text-2, #4b4b52);
+  line-height: 1.55;
+  max-width: 300px;
+}
+
+.panel-guest-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 8px;
+}
+

@@ -15,13 +15,12 @@ function readUser() {
 function AdminDashboard() {
   const [user] = useState(readUser);
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const token = localStorage.getItem("bookverse-token");
+  const [loading, setLoading] = useState(() => Boolean(token && readUser()?.role === "admin"));
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!token || user?.role !== "admin") {
-      setLoading(false);
       return;
     }
 

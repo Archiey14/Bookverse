@@ -1,30 +1,20 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import "./UserMenu.css";
 
-function readUser() {
-  try {
-    return JSON.parse(localStorage.getItem("bookverse-user"));
-  } catch {
-    return null;
-  }
-}
-
 function UserMenu() {
-  const [user, setUser] = useState(readUser);
+  const { user, isLoggedIn, logout } = useAuth();
 
-  function logout() {
-  localStorage.removeItem("bookverse-token");
-  localStorage.removeItem("bookverse-user");
-  window.dispatchEvent(new Event("bookverse-auth-change"));
-  setUser(null);
-}
-
-  if (!user) {
+  if (!isLoggedIn || !user) {
     return (
-      <Link className="sign-in" to="/login">
-        Sign in
-      </Link>
+      <div className="auth-nav-buttons">
+        <Link className="sign-in" to="/login">
+          Sign in
+        </Link>
+        <Link className="sign-in sign-in-register" to="/register">
+          Register
+        </Link>
+      </div>
     );
   }
 
@@ -35,14 +25,14 @@ function UserMenu() {
       <span className="user-greeting">
         Hi, <b>{firstName}</b>
       </span>
-      
+
       {user.role === "admin" && (
         <Link className="sign-in" to="/admin">
           Admin dashboard
         </Link>
       )}
 
-      <button className="sign-in" onClick={logout}>
+      <button className="sign-in" onClick={logout} type="button">
         Log out
       </button>
     </>

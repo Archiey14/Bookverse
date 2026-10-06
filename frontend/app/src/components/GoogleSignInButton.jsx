@@ -62,9 +62,11 @@ function GoogleSignInButton({ onCredential, onError }) {
         if (active) onError(error.message);
       });
 
+    const node = buttonRef.current;
+
     return () => {
       active = false;
-      buttonRef.current?.replaceChildren();
+      node?.replaceChildren();
     };
   }, [clientId, onCredential, onError]);
 

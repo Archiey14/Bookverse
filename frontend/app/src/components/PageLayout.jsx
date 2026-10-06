@@ -1,21 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import Announcement from "./Announcement";
+import ThemeToggle from "./ThemeToggle";
 import "../App.css";
 
-// Wraps the simpler pages (login, register, admin) with the same announcement
-// bar, charcoal navbar and footer used on the homepage, so every page of the
-// site looks like one place.
-//
-// mode="login"    -> navbar button offers "Create account"
+// Wraps pages (login, register, admin) with a consistent, subtle header and footer.
+// mode="login"    -> navbar button offers "Create account", scroll is locked
 // mode="register" -> navbar button offers "Sign in"
 // no mode         -> navbar shows the signed-in user menu
 function PageLayout({ mode, children }) {
   const location = useLocation();
 
   return (
-    <div className="app-shell page-layout">
-      <Announcement />
+    <div className={`app-shell page-layout ${mode ? `page-layout-${mode}` : ""}`}>
+      {mode !== "login" && <Announcement />}
 
       <header className="topbar">
         <Link className="brand" to="/" aria-label="Bookverse home">
@@ -26,16 +24,18 @@ function PageLayout({ mode, children }) {
         </Link>
 
         <nav className="main-nav" aria-label="Main navigation">
-          <Link to="/">Discover</Link>
-          <Link to="/" state={{ goTo: "bestsellers" }}>
+          <Link to="/">Home</Link>
+          <Link to="/books">Store</Link>
+          <Link to="/books" state={{ goTo: "bestsellers" }}>
             Bestsellers
           </Link>
-          <Link to="/" state={{ goTo: "about" }}>
+          <Link to="/books" state={{ goTo: "about" }}>
             Our story
           </Link>
         </nav>
 
         <div className="header-actions">
+          <ThemeToggle />
           {mode === "login" && (
             <Link className="sign-in" to="/register" state={location.state}>
               Create account
@@ -60,7 +60,11 @@ function PageLayout({ mode, children }) {
               book<span className="brand-light">verse</span>
             </span>
           </Link>
-          <span>Made for the love of a good story.</span>
+          <div className="site-footer-links">
+            <Link to="/terms">Terms & Conditions</Link>
+            <span aria-hidden="true">·</span>
+            <Link to="/privacy">Privacy Policy</Link>
+          </div>
           <span>© Shnoor {new Date().getFullYear()} Bookverse</span>
         </footer>
       )}

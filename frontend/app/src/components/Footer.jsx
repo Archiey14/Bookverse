@@ -148,7 +148,11 @@ function Footer({ onNotify, onOpenPanel, categories = [], showBar = true }) {
                 book<span>verse</span>
               </span>
             </Link>
-            <span>Made for the love of a good story.</span>
+            <div className="sf-footer-legal-links">
+              <Link to="/terms">Terms & Conditions</Link>
+              <span aria-hidden="true">·</span>
+              <Link to="/privacy">Privacy Policy</Link>
+            </div>
             <span>© Shnoor {new Date().getFullYear()} Bookverse</span>
           </div>
         )}

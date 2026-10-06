@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "./components/Header";
 import CategoryStrip from "./components/CategoryStrip";
 import Hero from "./components/Hero";
@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import { useBooks } from "./hooks/useBooks";
 import { useShop } from "./hooks/useShop";
 import { useScrollLock } from "./hooks/useScrollLock";
+import { useAuth } from "./hooks/useAuth";
 import {
   compareNewest,
   compareRating,
@@ -33,6 +34,7 @@ const MIN_SHELF = 3;
 // What the catalog is showing (collection, category, search) is kept in the
 // address bar: /?collection=bestsellers, /?category=Fiction, /?q=atomic.
 function App() {
+  const { isLoggedIn } = useAuth();
   const { books, loading, loadError } = useBooks();
   const {
     cart,
@@ -203,14 +205,38 @@ function App() {
       />
 
       <main id="main">
+        {!isLoggedIn && (
+          <aside className="guest-feature-notice" role="status" aria-label="Member notice">
+            <div className="guest-feature-notice-inner">
+              <span className="guest-notice-badge">MEMBER FEATURES</span>
+              <p className="guest-notice-text">
+                You are browsing in preview mode. <b>Sign in</b> to unlock your personal
+                bag, synced wishlist, order tracking, and custom recommendations.
+              </p>
+              <div className="guest-notice-actions">
+                <Link to="/login" className="guest-notice-link-btn guest-notice-primary">
+                  Sign in
+                </Link>
+                <Link to="/register" className="guest-notice-link-btn guest-notice-secondary">
+                  Create account
+                </Link>
+              </div>
+            </div>
+          </aside>
+        )}
+
+        <Hero
+          books={books}
+          onNavigate={(target) => showOnly({ collection: target })}
+          onSelectBook={setSelectedBook}
+        />
+
         <CategoryStrip
           books={books}
           loading={loading}
           active={category}
           onSelect={(name) => showOnly({ category: name })}
         />
-
-        <Hero books={books} onNavigate={(target) => showOnly({ collection: target })} />
 
         {ready && (
           <PromoTiles
@@ -262,7 +288,8 @@ function App() {
               />
             )}
 
-            {recommendations.length >= MIN_SHELF && (
+            {/* Personalized recommendations feature: shown when user is logged in */}
+            {isLoggedIn && recommendations.length >= MIN_SHELF && (
               <BookShelf
                 title="Recommended for you"
                 subtitle="Picked from the books in your bag and wishlist"

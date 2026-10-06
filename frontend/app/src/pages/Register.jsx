@@ -4,10 +4,13 @@ import axios from "axios";
 import "./Auth.css";
 import PageLayout from "../components/PageLayout";
 import GoogleSignInButton from "../components/GoogleSignInButton";
+import { useAuth } from "../hooks/useAuth";
 
 function Register() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
+
   // Pages like /book/:id send people here and expect them to come back
   const from = location.state?.from || "/";
   const [form, setForm] = useState({
@@ -46,8 +49,7 @@ function Register() {
         email: form.email,
         password: form.password,
       });
-      localStorage.setItem("bookverse-token", data.token);
-      localStorage.setItem("bookverse-user", JSON.stringify(data.user));
+      login(data.token, data.user);
       navigate(from);
     } catch (err) {
       setError(
@@ -59,24 +61,26 @@ function Register() {
     }
   }
 
-  const handleGoogleCredential = useCallback(async (credential) => {
-    setError("");
-    setLoading(true);
+  const handleGoogleCredential = useCallback(
+    async (credential) => {
+      setError("");
+      setLoading(true);
 
-    try {
-      const { data } = await axios.post("/api/auth/google", { credential });
-      localStorage.setItem("bookverse-token", data.token);
-      localStorage.setItem("bookverse-user", JSON.stringify(data.user));
-      window.dispatchEvent(new Event("bookverse-auth-change"));
-      navigate(from);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Google sign-in failed. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [from, navigate]);
+      try {
+        const { data } = await axios.post("/api/auth/google", { credential });
+        login(data.token, data.user);
+        navigate(from);
+      } catch (err) {
+        setError(
+          err.response?.data?.message ||
+            "Google sign-in failed. Please try again.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [from, login, navigate],
+  );
 
   return (
     <PageLayout mode="register">
@@ -91,8 +95,8 @@ function Register() {
               Start your reading <em>journey.</em>
             </h1>
             <p>
-              Create a free account to save your favorite books, build a
-              wishlist and track every order.
+              Create a free account to unlock your personal bag, build your
+              wishlist, get personalized recommendations, and track orders.
             </p>
           </div>
         </aside>
@@ -108,7 +112,7 @@ function Register() {
                 Create your <em>account.</em>
               </h2>
               <p className="auth-sub">
-                It only takes a minute. Your next favorite book is waiting.
+                It only takes a minute. Unlock the full Bookverse bookstore experience.
               </p>
             </div>
 
@@ -183,11 +187,24 @@ function Register() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Creating account..." : "Create account"}{" "}
+              {loading ? "Creating account..." : "Create account & unlock features"}{" "}
               <span>→</span>
             </button>
 
-            <div className="auth-divider"><span>or continue with</span></div>
+            <p className="auth-legal-notice">
+              By creating an account, you agree to our{" "}
+              <Link to="/terms" target="_blank" rel="noopener noreferrer">
+                Terms & Conditions
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </Link>.
+            </p>
+
+            <div className="auth-divider">
+              <span>or continue with</span>
+            </div>
             <GoogleSignInButton
               onCredential={handleGoogleCredential}
               onError={setError}
